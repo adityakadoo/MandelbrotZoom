@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
-#include "./Complex/Complex.hpp"
-#include "./Map/Map.hpp"
+#include "Complex/Complex.hpp"
+#include "Map/Map.hpp"
 
 #define MAX_ITER 200
 #define WINDOW_WIDTH 1200.0

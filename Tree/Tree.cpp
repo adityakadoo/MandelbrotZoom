@@ -230,14 +230,37 @@ template<typename T, int b>
 void Tree<T,b>::printNode(Node<T,b>* r, string s){
     for(ll i=0;i<size(r);i++){
         if(child(r,i)){
-            cout<<s<<"├──┐\n";
-            printNode(child(r,i),s+"│  ");
+            if(i==0){
+                cout<<"┬──";
+                printNode(child(r,i),s+"│  ");
+            }
+            else{
+                cout<<s<<"├──";
+                printNode(child(r,i),s+"│  ");
+            }
         }
-        if(i!=size(r)-1)
+        if(i==0 && !child(r,i) && size(r)!=1)
+            cout<<"┬──"<<*data(r,i)<<"\n";
+        else if(i!=size(r)-1)
             cout<<s<<"├──"<<*data(r,i)<<"\n";
     }
-    cout<<s<<"└──"<<*data(r,size(r)-1)<<"\n";
-    if(child(r,size(r)))
+    if(size(r)==1 && !child(r,0)){
+        if(child(r,size(r)))
+            cout<<"┬──";
+        else
+            cout<<"───";
+    }
+    else{
+        cout<<s;
+        if(child(r,size(r)))
+            cout<<"├──";
+        else
+            cout<<"└──";
+    }
+    cout<<*data(r,size(r)-1)<<"\n";
+    if(child(r,size(r))){
+        cout<<s<<"└──";
         printNode(child(r,size(r)),s+"   ");
+    }
     return;
 }

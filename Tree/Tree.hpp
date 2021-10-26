@@ -60,7 +60,6 @@ public:
     void traverse(function<void(T*)> f, Node<T, b> *r=NULL);
     // Print the tree in a pretty format
     friend ostream& operator<<(std::ostream &cout, Tree<T, b> &t){
-        cout<<"┬\n";
         t.printNode(t.root,"");
         return cout;
     }
