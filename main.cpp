@@ -3,7 +3,7 @@
 #include "Complex/Complex.hpp"
 #include "Map/Map.hpp"
 
-#define MAX_ITER 200
+#define MAX_ITER 500
 #define WINDOW_WIDTH 1200.0
 #define WINDOW_HEIGHT 800.0
 #define X_RESOL 1200
@@ -14,67 +14,9 @@
 #define RE_END 1.0
 #define IM_START -1.0
 #define IM_END 1.0
-typedef unsigned long int ll;
+typedef long long int ll;
+typedef unsigned long int usi;
 typedef double ld;
-
-void hsv2rgb(ld in_h,ld in_v,ld in_s,ld &out_r,ld &out_g,ld &out_b)
-{
-    // cout<<in_h<<" "<<in_v<<" "<<in_s<<"\n";
-    double hh, p, q, t, ff;
-    long i;
-
-    if(in_s <= 0.0) {       // < is bogus, just shuts up warnings
-        out_r = in_v;
-        out_g = in_v;
-        out_b = in_v;
-        return;
-    }
-    hh = in_h;
-    if(hh >= 360.0) hh = 0.0;
-    hh /= 60.0;
-    i = (long)hh;
-    ff = hh - i;
-    p = in_v * (1.0 - in_s);
-    q = in_v * (1.0 - (in_s * ff));
-    t = in_v * (1.0 - (in_s * (1.0 - ff)));
-
-    switch(i) {
-    case 0:
-        out_r = in_v;
-        out_g = t;
-        out_b = p;
-        break;
-    case 1:
-        out_r = q;
-        out_g = in_v;
-        out_b = p;
-        break;
-    case 2:
-        out_r = p;
-        out_g = in_v;
-        out_b = t;
-        break;
-
-    case 3:
-        out_r = p;
-        out_g = q;
-        out_b = in_v;
-        break;
-    case 4:
-        out_r = t;
-        out_g = p;
-        out_b = in_v;
-        break;
-    case 5:
-    default:
-        out_r = in_v;
-        out_g = p;
-        out_b = q;
-        break;
-    }
-    return;
-}
-   
 
 ld mandelbrot(Complex<ld> c){
     Complex<ld> z;
@@ -84,56 +26,48 @@ ld mandelbrot(Complex<ld> c){
         it += 1;
         // cout<<it<<"\t"<<c<<"\t"<<z<<"\t"<<z.abs()<<"\n";
     }
-    return it==MAX_ITER ? it : it+1 - log(log2(z.abs()));
+    return it;//==MAX_ITER ? it : it+1 - log(log2(z.abs()));
+}
+
+void colour_pixel(sf::VertexArray* p,ll m){
+    ld col_val = (ld)m / MAX_ITER;
+    ll r=0,g=0,b=0;
+    if(m<MAX_ITER){
+        r = col_val>0.5 ? 255 : 255 - 400*(0.5 - col_val) ;
+        g = col_val>0.5 ? 255 : 255 - 400*(0.5 - col_val) ;
+        b = col_val>0.5 ? 255 - 200*(1 - col_val) : 255 ;
+    }
+    (*p)[0].color = sf::Color(r,g,b,255);
+    (*p)[1].color = sf::Color(r,g,b,255);
+    (*p)[2].color = sf::Color(r,g,b,255);
+    (*p)[3].color = sf::Color(r,g,b,255);
 }
 
 int main(int argc, char const *argv[])
 {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mandelbrot Set");
-    // sf::CircleShape shape(100.f);
-    // shape.setFillColor(sf::Color::Magenta);
-    // // create a quad
-    // sf::VertexArray quad(sf::Quads, 4);
+    window.setKeyRepeatEnabled(false);
+    ld re_start = RE_START;
+    ld re_end = RE_END;
+    ld im_start = IM_START;
+    ld im_end = IM_END;
+    
+    sf::VertexArray* pixels[X_RESOL][Y_RESOL];
+    for(ll x=0;x<X_RESOL;x++){
+        for(ll y=0; y<Y_RESOL; y++)
+        {
+            pixels[x][y] = new sf::VertexArray(sf::Quads, 4);
 
-    // define it as a rectangle, located at (10, 10) and with size 100x100
-    // quad[0].position = sf::Vector2f(10.f, 10.f);
-    // quad[1].position = sf::Vector2f(11.f, 10.f);
-    // quad[2].position = sf::Vector2f(11.f, 11.f);
-    // quad[3].position = sf::Vector2f(10.f, 11.f);
+            (*pixels[x][y])[0].position = sf::Vector2f(x*PIXEL_WIDHT, y*PIXEL_HEIGHT);
+            (*pixels[x][y])[1].position = sf::Vector2f(x*PIXEL_WIDHT, (y+1)*PIXEL_HEIGHT);
+            (*pixels[x][y])[2].position = sf::Vector2f((x+1)*PIXEL_WIDHT, (y+1)*PIXEL_HEIGHT);
+            (*pixels[x][y])[3].position = sf::Vector2f((x+1)*PIXEL_WIDHT, y*PIXEL_HEIGHT);
 
-    // // define its texture area to be a 25x50 rectangle starting at (0, 0)
-    // quad[0].texCoords = sf::Vector2f(0.f, 0.f);
-    // quad[1].texCoords = sf::Vector2f(25.f, 0.f);
-    // quad[2].texCoords = sf::Vector2f(25.f, 50.f);
-    // quad[3].texCoords = sf::Vector2f(0.f, 50.f);
-
-    sf::VertexArray* pixels[X_RESOL*Y_RESOL];
-    for(ll i=0;i<X_RESOL*Y_RESOL;i++){
-        pixels[i] = new sf::VertexArray(sf::Quads, 4);
-        ll x = i/Y_RESOL;
-        ll y = i%X_RESOL;
-
-        // define it as a rectangle, located at (10, 10) and with size 100x100
-        (*pixels[i])[0].position = sf::Vector2f(x*PIXEL_WIDHT, y*PIXEL_HEIGHT);
-        (*pixels[i])[1].position = sf::Vector2f((x+1)*PIXEL_WIDHT, y*PIXEL_HEIGHT);
-        (*pixels[i])[3].position = sf::Vector2f(x*PIXEL_WIDHT, (y+1)*PIXEL_HEIGHT);
-        (*pixels[i])[2].position = sf::Vector2f((x+1)*PIXEL_WIDHT, (y+1)*PIXEL_HEIGHT);
-
-        Complex<ld> c(RE_START + ((ld)x / X_RESOL)*(RE_END - RE_START),
-                        IM_START + ((ld)y / Y_RESOL)*(IM_END - IM_START));
-        // cout<<c<<" - ";
-        ld m = mandelbrot(c);
-        // cout<<m<<"\n";
-        ll hue = (200 + ll(255 * (ld)m / MAX_ITER))%255;
-        ll val = m<MAX_ITER ? 255 : 0;
-        ll sat = 255;
-        ld r,g,b;
-        hsv2rgb((ld)hue/256,(ld)val/256,(ld)sat/256,r,g,b);
-
-        (*pixels[i])[0].color = sf::Color(r*256,g*256,b*256,sat);
-        (*pixels[i])[1].color = sf::Color(r*256,g*256,b*256,sat);
-        (*pixels[i])[2].color = sf::Color(r*256,g*256,b*256,sat);
-        (*pixels[i])[3].color = sf::Color(r*256,g*256,b*256,sat);
+            Complex<ld> c(re_start + ((ld)x / X_RESOL)*(re_end - re_start),
+                            im_start + ((ld)y / Y_RESOL)*(im_end - im_start));
+            ld m = mandelbrot(c);
+            colour_pixel(pixels[x][y],m);
+        }
     }
 
     while (window.isOpen())
@@ -145,12 +79,46 @@ int main(int argc, char const *argv[])
             {
                 window.close();
             }
+            else if (event.type == sf::Event::MouseButtonPressed)
+            {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    std::cout << "mouse x: " << event.mouseButton.x << " ";
+                    std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+
+                    bool x_sec = event.mouseButton.x > WINDOW_WIDTH/2;
+                    bool y_sec = event.mouseButton.y > WINDOW_HEIGHT/2;
+                    if(x_sec && y_sec){
+                        re_start = re_start + (re_end - re_start)/2;
+                        im_start = im_start + (im_end - im_start)/2;
+                    }
+                    else if(x_sec){
+                        re_start = re_start + (re_end - re_start)/2;
+                        im_end = im_start + (im_end - im_start)/2;
+                    }
+                    else if(y_sec){
+                        re_end = re_start + (re_end - re_start)/2;
+                        im_start = im_start + (im_end - im_start)/2;
+                    }
+                    else{
+                        re_end = re_start + (re_end - re_start)/2;
+                        im_end = im_start + (im_end - im_start)/2;
+                    }
+
+                    for(ll x=0;x<X_RESOL;x++){
+                        for(ll y=0;y<Y_RESOL;y++){
+                            Complex<ld> c(re_start + ((ld)x / X_RESOL)*(re_end - re_start),
+                                            im_start + ((ld)y / Y_RESOL)*(im_end - im_start));
+                            ld m = mandelbrot(c);
+                            colour_pixel(pixels[x][y],m);
+                        }
+                    }
+                }
+            }
         }
         window.clear();
-        // window.draw(shape);
         for(ll i=0;i<X_RESOL*Y_RESOL;i++){
-            window.draw(*pixels[i]);
-            // delete pixels[i];
+            window.draw(*pixels[i/Y_RESOL][i%Y_RESOL]);
         }
         window.display();
     }
