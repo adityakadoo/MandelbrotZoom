@@ -3,53 +3,52 @@
 #include <iostream>
 #include <math.h>
 
-template<typename f>
 class Complex
 {
 private:
     // template argument defines precision of
     // the real and imag components
-    f real;
-    f imag;
+    long double real;
+    long double imag;
 public:
     /* Constructors and Destructors */
     // Default constructor; returns origin
     Complex();
     // Constructor with real and imag components
-    Complex(f, f);
+    Complex(long double, long double);
     // Default destructor
     ~Complex();
     
     /* Component Access */
     // Read/write refererence for real or imag components
     // [0] - real; [1] - imag
-    f& operator[](int);
+    long double& operator[](int);
 
     /* Arithmetic Operations */
     // Addition
-    Complex<f> operator+(Complex<f>&);
+    Complex operator+(Complex);
     // Subraction
-    Complex<f> operator-(Complex<f>&);
+    Complex operator-(Complex);
     // Multiplication
-    Complex<f> operator*(Complex<f>&);
+    Complex operator*(Complex);
     // Division
-    Complex<f> operator/(Complex<f>&);
+    Complex operator/(Complex);
     // Absolute value or Magnitude
-    f abs();
+    long double abs();
     // Negative
-    Complex<f> operator-();
+    Complex operator-();
     // Compliment
-    Complex<f> operator!();
+    Complex operator!();
     
     /* Boolean Operations */
     // Equality
-    bool operator==(Complex<f>&);
+    bool operator==(Complex);
     // Inequality
-    bool operator!=(Complex<f>&);
+    bool operator!=(Complex);
 
     /* Printing */
     // Prints the given complex number
-    friend std::ostream& operator<<(std::ostream &cout, Complex<f> &c){
+    friend std::ostream& operator<<(std::ostream &cout, Complex &c){
         cout<<c.real<<"+"<<c.imag<<"j";
         return cout;
     }

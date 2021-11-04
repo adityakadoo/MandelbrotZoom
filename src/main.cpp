@@ -38,7 +38,7 @@ int main(int argc, char const *argv[])
             (*pixels[x][y])[2].position = sf::Vector2f((x+1)*PIXEL_WIDHT, (y+1)*PIXEL_HEIGHT);
             (*pixels[x][y])[3].position = sf::Vector2f((x+1)*PIXEL_WIDHT, y*PIXEL_HEIGHT);
 
-            Complex<ld> c(re_start + ((ld)x / X_RESOL)*(re_end - re_start),
+            Complex c(re_start + ((ld)x / X_RESOL)*(re_end - re_start),
                             im_start + ((ld)y / Y_RESOL)*(im_end - im_start));
             ld m = mandelbrot(c);
             colour_pixel(pixels[x][y],m);
@@ -82,7 +82,7 @@ int main(int argc, char const *argv[])
 
                     for(ll x=0;x<X_RESOL;x++){
                         for(ll y=0;y<Y_RESOL;y++){
-                            Complex<ld> c(re_start + ((ld)x / X_RESOL)*(re_end - re_start),
+                            Complex c(re_start + ((ld)x / X_RESOL)*(re_end - re_start),
                                             im_start + ((ld)y / Y_RESOL)*(im_end - im_start));
                             ld m = mandelbrot(c);
                             colour_pixel(pixels[x][y],m);

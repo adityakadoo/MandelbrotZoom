@@ -1,11 +1,10 @@
 #include <Mandelbrot.hpp>
-#include "../src/Complex.cpp"
 typedef long long int ll;
 typedef unsigned long int usi;
 typedef long double ld;
 
-ld mandelbrot(Complex<ld> c){
-    Complex<ld> z;
+ld mandelbrot(Complex c){
+    Complex z;
     ld it = 0;
     while(z.abs()<=2 && it<MAX_ITER){
         z = z*z + c;
