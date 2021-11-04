@@ -1,22 +1,42 @@
 # MandelbrotZoom
 
-Goal is to create an interactive animation of zooming into the Mandelbrot set in C++
+## Author: Kadoo Aditya Anil (200050055)
+
+### Goal: Create an interactive animation of zooming into the Mandelbrot set in C++ for the Project of the CS-293 course in Autumn 2021
 
 ----
 
-## Classes and Headers defined
+## Despcription
 
-- **ComplexNumber** - A class for complex numbers on the complex plane. Data type for real and imaginary components is taken as template argument for imporving precision later on. Supports operators such as +, -, *, /, !, ==, !=, [] and fucntions such as abs().
-- ColourVector
-- **MandelbrotMap** - A map that maps a given complex number on the complex plane, to a colour that it needs to be coloured with. Firstly the pixel is converted to complex number. This complex number is mapped to a integer using the [Optimised Escape-Time algorithm](https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set#:~:text=number%20of%20iterations.-,Optimized%20escape%20time%20algorithms,-%5Bedit%5D) which acts as the Hashing Function. Now the integer is compressed to a float between 0 to 1 using a simple compression map.
-- Main
-- Zooming
-- Main with Multi-threading
-- More precision
+Currently the app can create a window initialized to show the complete Mandelbrot Set on the complex plain. The user can click on one of the quadrants to zoom into it. Thus every time the user can zoom in 2x times. This can be done upto 20x times before the image get very blurry.
 
 ----
 
-## CS-293 Project by Prof. Bhaskaran Raman
+## Headers and Sources
+
+- **Complex** - A class for implementing complex numbers on the complex plane. Data type for real and imaginary components is taken as template argument for flexibility. Supports operators such as +, -, *, /, !, ==, !=, [] and fucntions such as abs().
+
+- **SFML** - External library used for rendering graphics and taking user input. It creates the window and takes mouse-clicks for zooming in.
+
+### To be improved
+
+- **Main** - Only a source file which has the actual main function that brings together all the headers to run the application. Currently only has zomming and is very slow. Plans to improve speed by adding multi-theading.
+
+- **Mandelbrot** - Implements the functions related to the mandelbrot set. Currently contains 2 functions: mandelbrot() which executes the [Optimised Escape-Time algorithm](https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set#:~:text=number%20of%20iterations.-,Optimized%20escape%20time%20algorithms,-%5Bedit%5D) and colour_pixel() method to give colour to a certain pixel according to it's result from the mandelbrot() function.
+
+### To be added
+
+- A Map class to memoize the results from the Mandelbrot algorithm to imporve time complexity of the code using Data Stuctures
+
+- A B-Tree class for internal storage of the MAP. This will give faster implementation.
+
+- A class for dynamic floats to improve precision
+
+- Tests to see if complexity is actually improving
+
+----
+
+## Problem Statement by Prof. Bhaskaran Raman
 
 ### Overall goals, principles
 
@@ -28,7 +48,7 @@ Goal is to create an interactive animation of zooming into the Mandelbrot set in
 
 - The code must be split across multiple files as necessary.  
 
-> Implementation must be in simplecpp. If you want to use any other graphics package, talk to me first
+Implementation must be in simplecpp. If you want to use any other graphics package, talk to me first
 
 1. There is this really interesting XScreenSaver of galaxies colliding with one another: <https://youtu.be/xBprAm9w-Fo> . Implement some version of this. You are free to design as you please, so long as the overall goals/principles above are achieved. You can include some interactivity to make it more interesting.`  
 

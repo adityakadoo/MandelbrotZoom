@@ -1,9 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
-#include "Complex/Complex.hpp"
-#include "Map/Map.hpp"
+#include <iostream>
+#include "../include/Complex.hpp"
+#include "../src/Complex.cpp"
+#include <Mandelbrot.hpp>
 
-#define MAX_ITER 500
 #define WINDOW_WIDTH 1200.0
 #define WINDOW_HEIGHT 800.0
 #define X_RESOL 1200
@@ -16,32 +17,7 @@
 #define IM_END 1.0
 typedef long long int ll;
 typedef unsigned long int usi;
-typedef double ld;
-
-ld mandelbrot(Complex<ld> c){
-    Complex<ld> z;
-    ld it = 0;
-    while(z.abs()<=2 && it<MAX_ITER){
-        z = z*z + c;
-        it += 1;
-        // cout<<it<<"\t"<<c<<"\t"<<z<<"\t"<<z.abs()<<"\n";
-    }
-    return it;//==MAX_ITER ? it : it+1 - log(log2(z.abs()));
-}
-
-void colour_pixel(sf::VertexArray* p,ll m){
-    ld col_val = (ld)m / MAX_ITER;
-    ll r=0,g=0,b=0;
-    if(m<MAX_ITER){
-        r = col_val>0.5 ? 255 : 255 - 400*(0.5 - col_val) ;
-        g = col_val>0.5 ? 255 : 255 - 400*(0.5 - col_val) ;
-        b = col_val>0.5 ? 255 - 200*(1 - col_val) : 255 ;
-    }
-    (*p)[0].color = sf::Color(r,g,b,255);
-    (*p)[1].color = sf::Color(r,g,b,255);
-    (*p)[2].color = sf::Color(r,g,b,255);
-    (*p)[3].color = sf::Color(r,g,b,255);
-}
+typedef long double ld;
 
 int main(int argc, char const *argv[])
 {

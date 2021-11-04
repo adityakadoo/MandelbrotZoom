@@ -1,5 +1,4 @@
-#include "Complex.h"
-#include <math.h>
+#include <Complex.hpp>
 
 template<typename f>
 Complex<f>::Complex(): real(f(0)), imag(f(0)){}

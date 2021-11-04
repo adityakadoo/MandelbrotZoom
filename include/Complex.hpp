@@ -1,6 +1,7 @@
 #ifndef __COMPLEX__
 #define __COMPLEX__
 #include <iostream>
+#include <math.h>
 
 template<typename f>
 class Complex
