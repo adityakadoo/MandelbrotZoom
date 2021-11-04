@@ -6,7 +6,7 @@
 
 ----
 
-## Despcription
+## Description
 
 Currently the app can create a window initialized to show the complete Mandelbrot Set on the complex plain. The user can click on one of the quadrants to zoom into it. Thus every time the user can zoom in 2x times. This can be done upto 20x times before the image get very blurry.
 
@@ -28,7 +28,7 @@ Currently the app can create a window initialized to show the complete Mandelbro
 
 - A Map class to memoize the results from the Mandelbrot algorithm to imporve time complexity of the code using Data Stuctures
 
-- A B-Tree class for internal storage of the MAP. This will give faster implementation.
+- A B-Tree class for internal storage of the Map. This will give faster implementation.
 
 - A class for dynamic floats to improve precision
 
