@@ -1,8 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <iostream>
-#include "../include/Complex.hpp"
-#include "../src/Complex.cpp"
+#include <Complex.hpp>
 #include <Mandelbrot.hpp>
 
 #define WINDOW_WIDTH 1200.0
