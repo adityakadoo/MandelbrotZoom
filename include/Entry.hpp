@@ -33,7 +33,7 @@ public:
     }
 };
 
-#define hash(e) e->h
-#define value(e) e->v
+// #define hashed(e) e->h
+// #define value(e) e->v
 
 #endif
