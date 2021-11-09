@@ -17,9 +17,9 @@ int main(int argc, char const *argv[])
     Utilities *u = new Utilities;
     vector<std::thread *> threads(THREAD_COUNT);
 
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mandelbrot Set");
-    window.setKeyRepeatEnabled(false);
-    sf::VertexArray **pixels[X_RESOL];
+    sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mandelbrot Set");
+    window->setKeyRepeatEnabled(false);
+    sf::VertexArray **pixels[RESOL];
 
     u->start = chrono::high_resolution_clock::now();
     for (ll i = 0; i < THREAD_COUNT; i++)
@@ -31,14 +31,14 @@ int main(int argc, char const *argv[])
     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
 
-    while (window.isOpen())
+    while (window->isOpen())
     {
         sf::Event event;
-        while (window.pollEvent(event))
+        while (window->pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
             {
-                window.close();
+                window->close();
                 u->running = false;
                 u->barrier->release(THREAD_COUNT);
                 for (ll i = 0; i < THREAD_COUNT; i++)
@@ -73,6 +73,7 @@ int main(int argc, char const *argv[])
                         u->re_end = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_end = u->im_start + (u->im_end - u->im_start) / 2;
                     }
+                    u->max_iter *= ITER_INC;
 
                     u->start = chrono::high_resolution_clock::now();
                     u->barrier->release(THREAD_COUNT);
@@ -83,12 +84,12 @@ int main(int argc, char const *argv[])
                 }
             }
         }
-        window.clear();
-        for (ll i = 0; i < X_RESOL * Y_RESOL; i++)
+        window->clear();
+        for (ll i = 0; i < RESOL * RESOL; i++)
         {
-            window.draw(*pixels[i / Y_RESOL][i % Y_RESOL]);
+            window->draw(*pixels[i / RESOL][i % RESOL]);
         }
-        window.display();
+        window->display();
     }
 
     return 0;

@@ -9,14 +9,13 @@ using namespace std;
 /* Window settings */
 #define WINDOW_WIDTH 1200.0
 #define WINDOW_HEIGHT 800.0
-#define X_RESOL 1024
-#define Y_RESOL 1024
-#define PIXEL_WIDHT WINDOW_WIDTH / X_RESOL
-#define PIXEL_HEIGHT WINDOW_HEIGHT / Y_RESOL
+#define RESOL 1024
+#define PIXEL_WIDHT WINDOW_WIDTH / RESOL
+#define PIXEL_HEIGHT WINDOW_HEIGHT / RESOL
 
 /* MultiThreading settings */
 #define THREAD_COUNT 16
-#define THREAD_DIST X_RESOL / THREAD_COUNT
+#define THREAD_DIST RESOL / THREAD_COUNT
 
 class Utilities
 {
@@ -31,6 +30,7 @@ public:
     long double re_end;
     long double im_start;
     long double im_end;
+    long long max_iter;
     bool running;
 
     /* Multithreading variables */

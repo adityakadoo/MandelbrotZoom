@@ -11,6 +11,7 @@ Utilities::Utilities()
     re_end = RE_END;
     im_start = IM_START;
     im_end = IM_END;
+    max_iter = MAX_ITER;
     running = true;
     reached_count = 0;
     count_protector = new counting_semaphore<1>(1);
@@ -25,16 +26,15 @@ Utilities::~Utilities()
     delete main_barrier;
 }
 
-void colour_pixel(Utilities *u, sf::VertexArray *p, ld m)
+void colour_pixel(Utilities *u, sf::VertexArray *p, ll m)
 {
-    // m = (ll)(m/10) * 10;
-    ld col_val = m / MAX_ITER;
+    ld col_val = m==u->max_iter ? 1 : (ld)(m % MAX_ITER) / MAX_ITER;
     ll r = 0, g = 0, b = 0;
     if (col_val < 0.25)
     {
-        r = 0 * (0.375 + 2.5 * col_val);
-        g = 149 * (0.375 + 2.5 * col_val);
-        b = 255 * (0.375 + 2.5 * col_val);
+        r = 0 * (4 * col_val);
+        g = 149 * (4 * col_val);
+        b = 255 * (4 * col_val);
     }
     else if (col_val < 0.5)
     {
@@ -50,9 +50,9 @@ void colour_pixel(Utilities *u, sf::VertexArray *p, ld m)
     }
     else if (col_val < 1)
     {
-        r = 255 * (0.25 + 3 * (1 - col_val));
-        g = 195 * (0.25 + 3 * (1 - col_val));
-        b = 0 * (0.25 + 3 * (1 - col_val));
+        r = 255 * (4 * (1 - col_val));
+        g = 195 * (4 * (1 - col_val));
+        b = 0 * (4 * (1 - col_val));
     }
     (*p)[0].color = sf::Color(r, g, b, 255);
     (*p)[1].color = sf::Color(r, g, b, 255);
@@ -62,9 +62,9 @@ void colour_pixel(Utilities *u, sf::VertexArray *p, ld m)
 
 void reset_pixel(Utilities *u, sf::VertexArray *pixel, ll x, ll y)
 {
-    Complex c(u->re_start + ((ld)x / X_RESOL) * (u->re_end - u->re_start),
-              u->im_start + ((ld)y / Y_RESOL) * (u->im_end - u->im_start));
-    ld m = mandelbrot(c);
+    Complex c(u->re_start + ((ld)x / RESOL) * (u->re_end - u->re_start),
+              u->im_start + ((ld)y / RESOL) * (u->im_end - u->im_start));
+    ll m = mandelbrot(c, u->max_iter);
     colour_pixel(u, pixel, m);
 }
 
@@ -106,8 +106,8 @@ void thread_routine(Utilities *u, sf::VertexArray ***pixels, ll x_start)
 {
     for (ll x = x_start; x < x_start + THREAD_DIST; x++)
     {
-        pixels[x] = new sf::VertexArray *[Y_RESOL];
-        for (ll y = 0; y < Y_RESOL; y++)
+        pixels[x] = new sf::VertexArray *[RESOL];
+        for (ll y = 0; y < RESOL; y++)
         {
             pixels[x][y] = new sf::VertexArray(sf::Quads, 4);
             init_pixel(u, pixels[x][y], x, y);
@@ -118,7 +118,7 @@ void thread_routine(Utilities *u, sf::VertexArray ***pixels, ll x_start)
     {
         for (ll x = x_start; x < x_start + THREAD_DIST; x++)
         {
-            for (ll y = 0; y < Y_RESOL; y++)
+            for (ll y = 0; y < RESOL; y++)
             {
                 reset_pixel(u, pixels[x][y], x, y);
             }
