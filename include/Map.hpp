@@ -5,10 +5,12 @@
 #include <Tree.hpp>
 typedef int K;
 
-class Map{
+class Map
+{
 private:
     Tree *t;
     std::function<H(K)> hashing_func;
+
 public:
     /* Constructors and Destructors */
     // Default Constructor
@@ -19,11 +21,12 @@ public:
     /* Map operations */
     // If new key then inserts in the map
     // else return the entry for an old key
-    std::pair<Entry*,bool> getOrCreate(K,V);
+    std::pair<Entry *, bool> getOrCreate(K, V);
 
     // Pretty printer
-    friend std::ostream& operator<<(std::ostream &cout, Map &m){
-        cout<<*(m.t);
+    friend std::ostream &operator<<(std::ostream &cout, Map &m)
+    {
+        cout << *(m.t);
         return cout;
     }
 };

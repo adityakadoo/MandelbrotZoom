@@ -42,3 +42,8 @@ clean:
 
 debug_clean:
 	rm -f $(ODIR)/debug_*
+
+.PHONY: count
+
+count:
+	find . -name '*.[hca]pp' -o -name '*.o' -o -name 'makefile' -o -name 'README.md' -o -name '.gitignore' | xargs wc -l

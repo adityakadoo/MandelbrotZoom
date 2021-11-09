@@ -11,7 +11,7 @@
 #define RE_END 1.0
 #define IM_START -1.0
 #define IM_END 1.0
-#define MAX_ITER 100
+#define MAX_ITER 500
 
 // Implements the mandelbrot escape-time algorithm
 // Returns the 0-1 ratio of result to Max_iter

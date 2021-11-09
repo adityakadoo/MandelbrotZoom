@@ -14,22 +14,23 @@ typedef long double ld;
 
 int main(int argc, char const *argv[])
 {
-    Utilities* u = new Utilities;
-    vector<std::thread*> threads(THREAD_COUNT);
+    Utilities *u = new Utilities;
+    vector<std::thread *> threads(THREAD_COUNT);
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mandelbrot Set");
     window.setKeyRepeatEnabled(false);
-    sf::VertexArray** pixels[X_RESOL];
+    sf::VertexArray **pixels[X_RESOL];
 
     u->start = chrono::high_resolution_clock::now();
-    for(ll i=0;i<THREAD_COUNT;i++){
-        threads[i] = new thread(thread_routine,u,pixels,i*THREAD_DIST);
+    for (ll i = 0; i < THREAD_COUNT; i++)
+    {
+        threads[i] = new thread(thread_routine, u, pixels, i * THREAD_DIST);
     }
     u->main_barrier->acquire();
     u->stop = chrono::high_resolution_clock::now();
     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
-    cout<<"\r"<<(ld)u->duration.count()/1000000<<" seconds taken\n";
-    
+    cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -40,7 +41,8 @@ int main(int argc, char const *argv[])
                 window.close();
                 u->running = false;
                 u->barrier->release(THREAD_COUNT);
-                for(ll i=0;i<THREAD_COUNT;i++){
+                for (ll i = 0; i < THREAD_COUNT; i++)
+                {
                     threads[i]->join();
                     delete threads[i];
                 }
@@ -49,23 +51,27 @@ int main(int argc, char const *argv[])
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    bool x_sec = event.mouseButton.x > WINDOW_WIDTH/2;
-                    bool y_sec = event.mouseButton.y > WINDOW_HEIGHT/2;
-                    if(x_sec && y_sec){
-                        u->re_start = u->re_start + (u->re_end - u->re_start)/2;
-                        u->im_start = u->im_start + (u->im_end - u->im_start)/2;
+                    bool x_sec = event.mouseButton.x > WINDOW_WIDTH / 2;
+                    bool y_sec = event.mouseButton.y > WINDOW_HEIGHT / 2;
+                    if (x_sec && y_sec)
+                    {
+                        u->re_start = u->re_start + (u->re_end - u->re_start) / 2;
+                        u->im_start = u->im_start + (u->im_end - u->im_start) / 2;
                     }
-                    else if(x_sec){
-                        u->re_start = u->re_start + (u->re_end - u->re_start)/2;
-                        u->im_end = u->im_start + (u->im_end - u->im_start)/2;
+                    else if (x_sec)
+                    {
+                        u->re_start = u->re_start + (u->re_end - u->re_start) / 2;
+                        u->im_end = u->im_start + (u->im_end - u->im_start) / 2;
                     }
-                    else if(y_sec){
-                        u->re_end = u->re_start + (u->re_end - u->re_start)/2;
-                        u->im_start = u->im_start + (u->im_end - u->im_start)/2;
+                    else if (y_sec)
+                    {
+                        u->re_end = u->re_start + (u->re_end - u->re_start) / 2;
+                        u->im_start = u->im_start + (u->im_end - u->im_start) / 2;
                     }
-                    else{
-                        u->re_end = u->re_start + (u->re_end - u->re_start)/2;
-                        u->im_end = u->im_start + (u->im_end - u->im_start)/2;
+                    else
+                    {
+                        u->re_end = u->re_start + (u->re_end - u->re_start) / 2;
+                        u->im_end = u->im_start + (u->im_end - u->im_start) / 2;
                     }
 
                     u->start = chrono::high_resolution_clock::now();
@@ -73,13 +79,14 @@ int main(int argc, char const *argv[])
                     u->main_barrier->acquire();
                     u->stop = chrono::high_resolution_clock::now();
                     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
-                    cout<<"\r"<<(ld)u->duration.count()/1000000<<" seconds taken\n";
+                    cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
                 }
             }
         }
         window.clear();
-        for(ll i=0;i<X_RESOL*Y_RESOL;i++){
-            window.draw(*pixels[i/Y_RESOL][i%Y_RESOL]);
+        for (ll i = 0; i < X_RESOL * Y_RESOL; i++)
+        {
+            window.draw(*pixels[i / Y_RESOL][i % Y_RESOL]);
         }
         window.display();
     }

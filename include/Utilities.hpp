@@ -11,12 +11,12 @@ using namespace std;
 #define WINDOW_HEIGHT 800.0
 #define X_RESOL 1024
 #define Y_RESOL 1024
-#define PIXEL_WIDHT WINDOW_WIDTH/X_RESOL
-#define PIXEL_HEIGHT WINDOW_HEIGHT/Y_RESOL
+#define PIXEL_WIDHT WINDOW_WIDTH / X_RESOL
+#define PIXEL_HEIGHT WINDOW_HEIGHT / Y_RESOL
 
 /* MultiThreading settings */
 #define THREAD_COUNT 16
-#define THREAD_DIST X_RESOL/THREAD_COUNT
+#define THREAD_DIST X_RESOL / THREAD_COUNT
 
 class Utilities
 {
@@ -37,12 +37,12 @@ public:
     // number of threads that reached the barrier
     long long reached_count;
     // Mutex for protecting reached_count
-    counting_semaphore<1>* count_protector;
+    counting_semaphore<1> *count_protector;
     // barrier for threads
-    counting_semaphore<THREAD_COUNT>* barrier;
+    counting_semaphore<THREAD_COUNT> *barrier;
     // barrier for main thread
-    counting_semaphore<1>* main_barrier;
-    
+    counting_semaphore<1> *main_barrier;
+
     // Default Constructor
     Utilities();
     // Default Destructor
@@ -51,17 +51,17 @@ public:
 
 /* Functions for Pixel Manipulation */
 // Colours a pixel
-void colour_pixel(Utilities*,sf::VertexArray*,long double);
+void colour_pixel(Utilities *, sf::VertexArray *, long double);
 // Resets a pixel
-void reset_pixel(Utilities*,sf::VertexArray*,long long,long long);
+void reset_pixel(Utilities *, sf::VertexArray *, long long, long long);
 // Initializes a pixel
-void init_pixel(Utilities*,sf::VertexArray*,long long,long long);
+void init_pixel(Utilities *, sf::VertexArray *, long long, long long);
 
 /* Multithreading Functions */
 // Implements a reusable barrier for threads
 // to wait till every thread finishes execution
-void barrier_routine(Utilities*);
+void barrier_routine(Utilities *);
 // Defines the routine for a thread
-void thread_routine(Utilities*,sf::VertexArray***,long long);
+void thread_routine(Utilities *, sf::VertexArray ***, long long);
 
 #endif
