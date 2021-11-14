@@ -1,6 +1,7 @@
 #ifndef __COMPLEX__
 #define __COMPLEX__
 #include <iostream>
+#include <iomanip>
 #include <math.h>
 
 #define MAX_ERR 1e-6
@@ -53,7 +54,14 @@ public:
     // Prints the given complex number
     friend std::ostream &operator<<(std::ostream &cout, Complex &c)
     {
-        cout << c.real << "+" << c.imag << "j";
+        if (c.imag >= 0)
+        {
+            cout << std::fixed << std::setprecision(4) << c.real << "+" << c.imag << "j";
+        }
+        else
+        {
+            cout << std::fixed << std::setprecision(4) << c.real << c.imag << "j";
+        }
         return cout;
     }
 };

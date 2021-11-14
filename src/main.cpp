@@ -5,6 +5,7 @@
 #include <thread>
 #include <semaphore>
 #include <Complex.hpp>
+#include <Stack.hpp>
 #include <Mandelbrot.hpp>
 #include <Utilities.hpp>
 using namespace std;
@@ -16,8 +17,9 @@ int main(int argc, char const *argv[])
 {
     Utilities *u = new Utilities;
     vector<std::thread *> threads(THREAD_COUNT);
+    Stack s;
 
-    sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mandelbrot Set");
+    sf::RenderWindow *window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mandelbrot Set");
     window->setKeyRepeatEnabled(false);
     sf::VertexArray **pixels[RESOL];
 
@@ -46,6 +48,8 @@ int main(int argc, char const *argv[])
                     threads[i]->join();
                     delete threads[i];
                 }
+                cout << "\r" << flush;
+                continue;
             }
             else if (event.type == sf::Event::MouseButtonPressed)
             {
@@ -55,25 +59,62 @@ int main(int argc, char const *argv[])
                     bool y_sec = event.mouseButton.y > WINDOW_HEIGHT / 2;
                     if (x_sec && y_sec)
                     {
+                        s.push(3);
                         u->re_start = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_start = u->im_start + (u->im_end - u->im_start) / 2;
                     }
                     else if (x_sec)
                     {
+                        s.push(2);
                         u->re_start = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_end = u->im_start + (u->im_end - u->im_start) / 2;
                     }
                     else if (y_sec)
                     {
+                        s.push(0);
                         u->re_end = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_start = u->im_start + (u->im_end - u->im_start) / 2;
                     }
                     else
                     {
+                        s.push(1);
                         u->re_end = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_end = u->im_start + (u->im_end - u->im_start) / 2;
                     }
                     u->max_iter *= ITER_INC;
+
+                    u->start = chrono::high_resolution_clock::now();
+                    u->barrier->release(THREAD_COUNT);
+                    u->main_barrier->acquire();
+                    u->stop = chrono::high_resolution_clock::now();
+                    u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
+                    cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
+                }
+                else if (event.mouseButton.button == sf::Mouse::Right && !s.empty())
+                {
+                    switch (s.top())
+                    {
+                    case 0:
+                        u->re_end = u->re_start + (u->re_end - u->re_start) * 2;
+                        u->im_start = u->im_start - (u->im_end - u->im_start);
+                        break;
+                    case 1:
+                        u->re_end = u->re_start + (u->re_end - u->re_start) * 2;
+                        u->im_end = u->im_start + (u->im_end - u->im_start) * 2;
+                        break;
+                    case 2:
+                        u->re_start = u->re_start - (u->re_end - u->re_start);
+                        u->im_end = u->im_start + (u->im_end - u->im_start) * 2;
+                        break;
+                    case 3:
+                        u->re_start = u->re_start - (u->re_end - u->re_start);
+                        u->im_start = u->im_start - (u->im_end - u->im_start);
+                        break;
+                    default:
+                        break;
+                    }
+                    s.pop();
+                    u->max_iter /= ITER_INC;
 
                     u->start = chrono::high_resolution_clock::now();
                     u->barrier->release(THREAD_COUNT);
@@ -90,6 +131,16 @@ int main(int argc, char const *argv[])
             window->draw(*pixels[i / RESOL][i % RESOL]);
         }
         window->display();
+        sf::Vector2i localPosition = window->getPosition();
+        sf::Vector2i globalPosition = sf::Mouse::getPosition();
+        ld x_coord = globalPosition.x - localPosition.x;
+        ld y_coord = globalPosition.y - localPosition.y - 40;
+        if (0 <= x_coord && x_coord <= WINDOW_WIDTH && 0 <= y_coord && y_coord <= WINDOW_HEIGHT)
+        {
+            Complex temp(u->re_start + (x_coord / WINDOW_WIDTH) * (u->re_end - u->re_start),
+                         u->im_end - (y_coord / WINDOW_HEIGHT) * (u->im_end - u->im_start));
+            cout << "\r" << temp << "  " << flush;
+        }
     }
 
     return 0;

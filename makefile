@@ -9,10 +9,10 @@ SRCDIR =src
 
 LIBS=-lsfml-graphics -lsfml-window -lsfml-system
 
-_DEPS = Entry.hpp Tree.hpp Map.hpp Complex.hpp Mandelbrot.hpp Utilities.hpp
+_DEPS = Entry.hpp Tree.hpp Map.hpp Complex.hpp Stack.hpp Mandelbrot.hpp Utilities.hpp
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ =  Entry.o Tree.o Map.o Complex.o Mandelbrot.o Utilities.o main.o
+_OBJ =  Entry.o Tree.o Map.o Complex.o Stack.o Mandelbrot.o Utilities.o main.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 DEBUG_OBJ = $(patsubst %,$(ODIR)/debug_%,$(_OBJ))
