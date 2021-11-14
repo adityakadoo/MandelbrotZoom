@@ -54,10 +54,10 @@ Complex Complex::operator!()
 
 bool Complex::operator==(Complex c)
 {
-    return real == c[0] && imag == c[1];
+    return (*this - c).abs() <= MAX_ERR;
 }
 
 bool Complex::operator!=(Complex c)
 {
-    return real != c[0] || imag != c[1];
+    return (*this - c).abs() > MAX_ERR;
 }

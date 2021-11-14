@@ -3,6 +3,8 @@
 #include <iostream>
 #include <math.h>
 
+#define MAX_ERR 1e-6
+
 class Complex
 {
 private:

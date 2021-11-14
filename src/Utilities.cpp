@@ -26,9 +26,9 @@ Utilities::~Utilities()
     delete main_barrier;
 }
 
-void colour_pixel(Utilities *u, sf::VertexArray *p, ll m)
+void colour_pixel(Utilities *u, sf::VertexArray *p, ld m)
 {
-    ld col_val = m==u->max_iter ? 1 : (ld)(m % MAX_ITER) / MAX_ITER;
+    ld col_val = m==u->max_iter ? 1 : (m - ((ll)(m / MAX_ITER))*MAX_ITER)/MAX_ITER;
     ll r = 0, g = 0, b = 0;
     if (col_val < 0.25)
     {
@@ -64,7 +64,7 @@ void reset_pixel(Utilities *u, sf::VertexArray *pixel, ll x, ll y)
 {
     Complex c(u->re_start + ((ld)x / RESOL) * (u->re_end - u->re_start),
               u->im_start + ((ld)y / RESOL) * (u->im_end - u->im_start));
-    ll m = mandelbrot(c, u->max_iter);
+    ld m = mandelbrot(c, u->max_iter);
     colour_pixel(u, pixel, m);
 }
 

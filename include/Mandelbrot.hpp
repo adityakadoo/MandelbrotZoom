@@ -16,6 +16,6 @@
 
 // Implements the mandelbrot escape-time algorithm
 // Returns the 0-1 ratio of result to Max_iter
-long long mandelbrot(Complex, long long);
+long double mandelbrot(Complex, long long);
 
 #endif
