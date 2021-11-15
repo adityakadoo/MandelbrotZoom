@@ -12,5 +12,5 @@ ld mandelbrot(Complex c, ll max_iter)
         z = z * z + c;
         it += 1;
     }
-    return it==max_iter ? it : it+1 - log(log2(z.abs()));
+    return it == max_iter ? it : it + 1 - log(log2(z.abs()));
 }

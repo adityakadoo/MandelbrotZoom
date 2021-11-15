@@ -5,14 +5,14 @@ PFLAG=-pthread
 
 ODIR =obj
 SRCDIR =src
-
+TESTDIR =test
 
 LIBS=-lsfml-graphics -lsfml-window -lsfml-system
 
-_DEPS = Entry.hpp Tree.hpp Map.hpp Complex.hpp Stack.hpp Mandelbrot.hpp Utilities.hpp
+_DEPS = Entry.hpp Tree.hpp Complex.hpp Stack.hpp Mandelbrot.hpp Utilities.hpp
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ =  Entry.o Tree.o Map.o Complex.o Stack.o Mandelbrot.o Utilities.o main.o
+_OBJ =  Entry.o Tree.o Complex.o Stack.o Mandelbrot.o Utilities.o main.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 DEBUG_OBJ = $(patsubst %,$(ODIR)/debug_%,$(_OBJ))
@@ -31,7 +31,7 @@ debug: $(DEBUG_OBJ)
 	gdb $(ODIR)/$@_main.app
 
 run:
-	./$(ODIR)/main.app
+	./$(ODIR)/main.app test/log_file.txt
 
 .PHONY: clean
 

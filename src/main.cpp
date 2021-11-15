@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <thread>
 #include <semaphore>
@@ -18,6 +19,7 @@ int main(int argc, char const *argv[])
     Utilities *u = new Utilities;
     vector<std::thread *> threads(THREAD_COUNT);
     Stack s;
+    ofstream fout(argv[1]);
 
     sf::RenderWindow *window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mandelbrot Set");
     window->setKeyRepeatEnabled(false);
@@ -32,6 +34,7 @@ int main(int argc, char const *argv[])
     u->stop = chrono::high_resolution_clock::now();
     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
+    fout << (ld)u->duration.count() / 1000000 << flush << "\n";
 
     while (window->isOpen())
     {
@@ -89,6 +92,7 @@ int main(int argc, char const *argv[])
                     u->stop = chrono::high_resolution_clock::now();
                     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
                     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
+                    fout << (ld)u->duration.count() / 1000000 << flush << "\n";
                 }
                 else if (event.mouseButton.button == sf::Mouse::Right && !s.empty())
                 {
@@ -122,6 +126,7 @@ int main(int argc, char const *argv[])
                     u->stop = chrono::high_resolution_clock::now();
                     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
                     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
+                    fout << (ld)u->duration.count() / 1000000 << flush << "\n";
                 }
             }
         }

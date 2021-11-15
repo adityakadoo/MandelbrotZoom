@@ -28,7 +28,7 @@ Utilities::~Utilities()
 
 void colour_pixel(Utilities *u, sf::VertexArray *p, ld m)
 {
-    ld col_val = m==u->max_iter ? 1 : (m - ((ll)(m / MAX_ITER))*MAX_ITER)/MAX_ITER;
+    ld col_val = m == u->max_iter ? 1 : (m - ((ll)(m / MAX_ITER)) * MAX_ITER) / MAX_ITER;
     ll r = 0, g = 0, b = 0;
     if (col_val < 0.25)
     {
