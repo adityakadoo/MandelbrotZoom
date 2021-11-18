@@ -28,7 +28,7 @@ void Stack::grow()
     return;
 }
 
-ll Stack::size()
+ll Stack::height()
 {
     return curr_size;
 }

@@ -1,19 +1,20 @@
 #ifndef __ENTRY__
 #define __ENTRY__
 #include <Complex.hpp>
-typedef long long H;
-typedef long double V;
+
+#define FACTOR 2
+#define level(h) ceil(log2(h + 1) / 2) - 1
 
 // A class to denote an entry of the map
 class Entry
 {
 public:
-    H h; // Hashed key
-    V v; // Value
+    long long h;   // Hashed key
+    long double v; // Value
 
     /* Constructors and Destructors */
     // Constructor with given hash and value
-    Entry(H, V);
+    Entry(long long, long double);
     // Copy Constructor
     Entry(const Entry &);
     // Default destructor

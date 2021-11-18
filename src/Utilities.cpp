@@ -12,7 +12,9 @@ Utilities::Utilities()
     im_start = IM_START;
     im_end = IM_END;
     max_iter = MAX_ITER;
+    zoom_numb = 0;
     running = true;
+    t = new Tree(RESOL);
     reached_count = 0;
     count_protector = new counting_semaphore<1>(1);
     barrier = new counting_semaphore<THREAD_COUNT>(0);
@@ -21,6 +23,7 @@ Utilities::Utilities()
 
 Utilities::~Utilities()
 {
+    delete t;
     delete count_protector;
     delete barrier;
     delete main_barrier;
@@ -66,6 +69,9 @@ void reset_pixel(Utilities *u, sf::VertexArray *pixel, ll x, ll y)
               u->im_start + ((ld)y / RESOL) * (u->im_end - u->im_start));
     ld m = mandelbrot(c, u->max_iter);
     colour_pixel(u, pixel, m);
+    cout<< "\r" << *(u->t) << flush <<"\n";
+    Entry* e = u->t->get(u->zoom_numb,x,y,m);
+    e->v = m;
 }
 
 void init_pixel(Utilities *u, sf::VertexArray *pixel, ll x, ll y)

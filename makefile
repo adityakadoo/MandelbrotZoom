@@ -46,4 +46,4 @@ debug_clean:
 .PHONY: count
 
 count:
-	find . -name '*.[hca]pp' -o -name '*.o' -o -name 'makefile' -o -name 'README.md' -o -name '.gitignore' | xargs wc -l
+	find . -name '*.[hc]pp' -o -name 'makefile' -o -name 'README.md' -o -name '.gitignore' | xargs wc -l

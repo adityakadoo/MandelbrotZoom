@@ -1,17 +1,18 @@
 #include <Tree.hpp>
 using namespace std;
 typedef long long ll;
+typedef long double ld;
 
 Node::Node(Node *p, ll loc)
 {
     parent = make_pair(p, loc);
-    children = new Node *[b];
-    for (ll i = 0; i < b; i++)
+    children = new Node *[B];
+    for (ll i = 0; i < B; i++)
     {
         children[i] = NULL;
     }
-    data = new T *[b - 1];
-    for (ll i = 0; i < b - 1; i++)
+    data = new Entry *[B - 1];
+    for (ll i = 0; i < B - 1; i++)
     {
         data[i] = NULL;
     }
@@ -20,25 +21,55 @@ Node::Node(Node *p, ll loc)
 
 Node::~Node()
 {
-    for (int i = 0; i < b; i++)
+    for (int i = 0; i < B; i++)
         if (children[i])
             delete children[i];
     delete[] children;
-    for (int i = 0; i < b - 1; i++)
+    for (int i = 0; i < B - 1; i++)
         if (data[i])
             delete data[i];
     delete[] data;
 }
 
-Tree::Tree() : root(NULL) {}
+Tree::Tree(ll f) : root(NULL), root_data(NULL) {
+    for(ll i=0;i<f*f;i++){
+        Entry* e = new Entry(i,-1);
+        insert(e);
+    }
+}
 
-ll Tree::binarySearch(T **arr, ll len, T elem)
+long long Tree::hash(ll v,ll f, ll x, ll y)
+{
+    if(x==0 && y==0){
+        return v;
+    }
+    ll m = pow(FACTOR*FACTOR,f+1);
+    ll res = hash(v+m,f-1,x/2,y/2);
+    res -= m;
+    res += m*(x % 2 + FACTOR * (y % 2));
+    return res;
+}
+
+pair<ll, ll> Tree::unhash(ll h, ll f){
+    pair<ll,ll> res = make_pair(0,0);
+    for(ll i=0;i<f;i++){
+        ll temp = h % (FACTOR*FACTOR);
+        res.first *= FACTOR;
+        res.first += temp % FACTOR;
+        res.second *= FACTOR;
+        res.second += temp / FACTOR;
+        h /= FACTOR*FACTOR;
+    }
+    return res;
+}
+
+ll Tree::binarySearch(Entry **arr,  ll len, Entry *elem)
 {
     ll l = 0, r = len - 1, res = -1, mid;
     while (l <= r)
     {
         mid = l + (r - l) / 2;
-        if (*arr[mid] <= elem)
+        if (*arr[mid] <= *elem)
         {
             res = mid;
             l = mid + 1;
@@ -51,8 +82,18 @@ ll Tree::binarySearch(T **arr, ll len, T elem)
     return res;
 }
 
-bool Tree::insert(const T &elem)
+bool Tree::put(ll v, ll f, ll x, ll y, ld value){
+    Entry *elem = new Entry(hash(v, f, x, y), value);
+    return insert(elem);
+}
+
+bool Tree::insert(Entry* elem)
 {
+    if (!root_data)
+    {
+        root_data = elem;
+        return true;
+    }
     Node *p = NULL;
     Node *r = root;
     ll i = -2;
@@ -60,122 +101,197 @@ bool Tree::insert(const T &elem)
     {
         p = r;
         i = binarySearch(&data(r, 0), size(r), elem);
-        if (i == size(r) - 1 && size(r) + 1 < b)
+        if (i == size(r) - 1 && size(r) + 1 < B)
         {
-            data(r, size(r)) = new T(elem);
+            data(r, size(r)) = elem;
             size(r)++;
             return true;
         }
         else if (i == -1)
+        {
             r = child(r, 0);
-        else if (*data(r, i) == elem)
+        }
+        else if (*data(r, i) == *elem)
+        {
             return false;
+        }
         else
+        {
             r = child(r, i + 1);
+        }
     }
     r = new Node(p, i + 1);
-    data(r, 0) = new T(elem);
+    data(r, 0) = elem;
     size(r)++;
     if (!p)
+    {
         root = r;
+    }
     else
+    {
         child(p, i + 1) = r;
+    }
     return true;
 }
 
-pair<Node *, ll> Tree::find(T elem)
+pair<Node *, ll> Tree::find(Entry *elem)
 {
+    if (*elem == *root_data)
+    {
+        return make_pair((Node *)NULL, 0);
+    }
     Node *r = root;
     ll i;
     while (r)
     {
         i = binarySearch(&data(r, 0), size(r), elem);
         if (i == -1)
+        {
             r = child(r, 0);
-        else if (*data(r, i) == elem)
+        }
+        else if (*data(r, i) == *elem)
+        {
             return make_pair(r, i);
+        }
         else
+        {
             r = child(r, i + 1);
+        }
     }
     return make_pair((Node *)NULL, -1);
 }
 
-pair<Node *, ll> Tree::min()
-{
-    if (!root)
-        return make_pair((Node *)NULL, -1);
-    Node *r = root;
-    while (child(r, 0))
-        r = child(r, 0);
-    return make_pair(r, 0);
+Entry* Tree::get(ll v, ll f, ll x, ll y){
+    Entry* temp = new Entry(hash(v,f,x,y),-1);
+    pair<Node *, ll> r = find(temp);
+    if(r.first){
+        return data(r.first,r.second);
+    }
+    else if(r.second==0){
+        return root_data;
+    }
+    return NULL;
 }
 
-pair<Node *, ll> Tree::max()
+Entry *Tree::min()
+{
+    if (!root_data)
+    {
+        return NULL;
+    }
+    return root_data;
+}
+
+Entry *Tree::max()
 {
     if (!root)
-        return make_pair((Node *)NULL, -1);
+    {
+        return root_data;
+    }
     Node *r = root;
     while (child(r, size(r)))
+    {
         r = child(r, size(r));
-    return make_pair(r, size(r) - 1);
+    }
+    return data(r, size(r) - 1);
 }
 
-pair<Node *, ll> Tree::succ(Node *r, ll i)
+Entry *Tree::succ(Entry *elem)
 {
-    if (!child(r, i + 1) && i + 1 < size(r))
-        return make_pair(r, i + 1);
-    else if (!child(r, i + 1))
+    pair<Node *, ll> r = find(elem);
+    if (!r.first)
     {
-        pair<Node *, ll> p = parent(r);
+        if (r.second == 0)
+        {
+            if (!root)
+            {
+                return NULL;
+            }
+            r.first = root;
+            while (child(r.first, 0))
+            {
+                r.first = child(r.first, 0);
+            }
+            return data(r.first, 0);
+        }
+        return NULL;
+    }
+    if (!child(r.first, r.second + 1) && r.second + 1 < size(r.first))
+    {
+        return data(r.first, r.second + 1);
+    }
+    else if (!child(r.first, r.second + 1))
+    {
+        pair<Node *, ll> p = parent(r.first);
         while (p.first && p.second >= size(p.first))
+        {
             p = parent(p.first);
+        }
         if (p.first)
-            return make_pair(p.first, p.second);
+        {
+            return data(p.first, p.second);
+        }
         else
-            return make_pair((Node *)NULL, -1);
+        {
+            return NULL;
+        }
     }
-    while (child(r, i + 1))
+    while (child(r.first, r.second + 1))
     {
-        r = child(r, i + 1);
-        i = -1;
+        r.first = child(r.first, r.second + 1);
+        r.second = -1;
     }
-    return make_pair(r, i + 1);
+    return data(r.first, r.second + 1);
 }
 
-pair<Node *, ll> Tree::pred(Node *r, ll i)
+Entry *Tree::pred(Entry *elem)
 {
-    if (!child(r, i) && i != 0)
-        return make_pair(r, i - 1);
-    else if (!child(r, i))
+    pair<Node *, ll> r = find(elem);
+    if (!r.first)
     {
-        pair<Node *, ll> p = parent(r);
+        return NULL;
+    }
+    if (!child(r.first, r.second) && r.second != 0)
+    {
+        return data(r.first, r.second - 1);
+    }
+    else if (!child(r.first, r.second))
+    {
+        pair<Node *, ll> p = parent(r.first);
         while (p.first && p.second <= 0)
+        {
             p = parent(p.first);
+        }
         if (p.first)
-            return make_pair(p.first, size(p.first) - 1);
+        {
+            return data(p.first, size(p.first) - 1);
+        }
         else
-            return make_pair((Node *)NULL, -1);
+        {
+            return root_data;
+        }
     }
-    while (child(r, i))
+    while (child(r.first, r.second))
     {
-        ll temp = i;
-        i = size(child(r, i));
-        r = child(r, temp);
+        ll temp = r.second;
+        r.second = size(child(r.first, r.second));
+        r.first = child(r.first, temp);
     }
-    return make_pair(r, i - 1);
+    return data(r.first, r.second - 1);
 }
 
-void Tree::traverse(function<void(T *)> f, Node *r)
+void Tree::traverse(function<void(Entry *)> f, Node *r)
 {
     if (!r)
     {
         r = root;
+        f(root_data);
     }
     for (ll i = 0; i < size(r); i++)
     {
         if (child(r, i))
             traverse(f, child(r, i));
-        f(&(*data(r, i)));
+        f(data(r, i));
     }
     if (child(r, size(r)))
         traverse(f, child(r, size(r)));
@@ -185,7 +301,13 @@ void Tree::traverse(function<void(T *)> f, Node *r)
 Tree::~Tree()
 {
     if (root)
+    {
         delete root;
+    }
+    if (root_data)
+    {
+        delete root_data;
+    }
 }
 
 void Tree::printNode(Node *r, string s)
@@ -233,3 +355,37 @@ void Tree::printNode(Node *r, string s)
     }
     return;
 }
+
+void Tree::zoom_in(ll in){
+    for(ll i=0;i<=B;i++){
+        if(i!=in){
+            delete child(root,i);
+            child(root,i)=NULL;
+        }
+        if(i+1!=in && i!=B){
+            delete data(root,i);
+            data(root,i)=NULL;
+        }
+    }
+    if(in!=0){
+        delete root_data;
+        root_data = data(root,in-1);
+        data(root,in-1) = NULL;
+    }
+    Node* temp = child(root,in);
+    child(root,in) = NULL;
+    delete root;
+    root = temp;
+}
+
+// void Tree::zoom_out(ll v, ll on){
+//     Node* old_root = root;
+//     Entry* old_root_data = root_data;
+//     root = new Node(NULL,-1);
+//     ll f = pow(FACTOR*FACTOR,level(old_root_data->h));
+//     ll v = old_root_data->h % f;
+//     root_data = new Entry(v,-1);
+//     for(ll i=0;i<=b;i++){
+//         if()
+//     }
+// }

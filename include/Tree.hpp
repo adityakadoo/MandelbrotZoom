@@ -3,8 +3,7 @@
 #include <iostream>
 #include <functional>
 #include <Entry.hpp>
-#define b 3
-typedef Entry T;
+#define B 4
 
 class Node
 {
@@ -12,7 +11,7 @@ public:
     /* Public data and connected nodes */
     std::pair<Node *, long long> parent;
     Node **children;
-    T **data;
+    Entry **data;
     long long size;
     /* Constructors and Destructors */
     // Constructor with parent pointer
@@ -30,41 +29,57 @@ class Tree
 {
 private:
     Node *root;
+    Entry *root_data;
 
+    // Hashing function
+    static long long hash(long long, long long, long long, long long);
+    // DEcoding function
+    static std::pair<long long, long long> unhash(long long, long long);
     // Binary Search for internal use
-    static long long binarySearch(T **, long long, T);
+    static long long binarySearch(Entry **, long long, Entry *);
     // Recursive Printer for internal use
     static void printNode(Node *, std::string s);
 
 public:
     // Default Constructor
-    Tree();
+    Tree(long long);
     // Default Destructor
     ~Tree();
 
     /* Tree Operations */
+    // Put an element with given x and y
+    bool put(long long, long long, long long, long long, long double);
     // Inserts the given element
-    bool insert(const T &);
+    bool insert(Entry*);
     // Find the given element
-    std::pair<Node *, long long> find(T);
+    std::pair<Node *, long long> find(Entry *);
+    // Get element with given x and y
+    Entry* get(long long, long long, long long, long long);
     // Find min element in the tree
-    std::pair<Node *, long long> min();
+    Entry *min();
     // Find max element in the tree
-    std::pair<Node *, long long> max();
+    Entry *max();
     // Find successor of the given node
-    std::pair<Node *, long long> succ(Node *, long long);
+    Entry *succ(Entry *);
     // Find predecessor of the given node
-    std::pair<Node *, long long> pred(Node *, long long);
+    Entry *pred(Entry *);
     // // Remove the given element
     // bool remove(T);
     // Traversal based on given type
-    void traverse(std::function<void(T *)> f, Node *r = NULL);
+    void traverse(std::function<void(Entry *)> f, Node *r = NULL);
     // Print the tree in a pretty format
     friend std::ostream &operator<<(std::ostream &cout, Tree &t)
     {
-        t.printNode(t.root, "");
+        cout << *t.root_data << "\n└──";
+        t.printNode(t.root, "   ");
         return cout;
     }
+
+    /* Extra Functions for Zooming */
+    // Zooming in
+    void zoom_in(long long);
+    // Zooming out
+    void zoom_out(long long);
 };
 
 #endif

@@ -27,7 +27,7 @@ public:
 
     /* Size access */
     // returns the current size
-    long long size();
+    long long height();
     // returns true if empty
     bool empty();
 

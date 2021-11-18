@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
     fout << (ld)u->duration.count() / 1000000 << flush << "\n";
-
+    cout<< "\r" << *(u->t) << flush <<"\n";
     while (window->isOpen())
     {
         sf::Event event;
@@ -63,12 +63,14 @@ int main(int argc, char const *argv[])
                     if (x_sec && y_sec)
                     {
                         s.push(3);
+                        u->zoom_numb += 3*pow(FACTOR*FACTOR,s.height());
                         u->re_start = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_start = u->im_start + (u->im_end - u->im_start) / 2;
                     }
                     else if (x_sec)
                     {
                         s.push(2);
+                        u->zoom_numb += 2*pow(FACTOR*FACTOR,s.height());
                         u->re_start = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_end = u->im_start + (u->im_end - u->im_start) / 2;
                     }
@@ -81,6 +83,7 @@ int main(int argc, char const *argv[])
                     else
                     {
                         s.push(1);
+                        u->zoom_numb += pow(FACTOR*FACTOR,s.height());
                         u->re_end = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_end = u->im_start + (u->im_end - u->im_start) / 2;
                     }
@@ -117,6 +120,7 @@ int main(int argc, char const *argv[])
                     default:
                         break;
                     }
+                    u->zoom_numb %= (ll)pow(FACTOR*FACTOR,s.height());
                     s.pop();
                     u->max_iter /= ITER_INC;
 
