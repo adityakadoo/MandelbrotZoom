@@ -1,4 +1,5 @@
 #include <Tree.hpp>
+#include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
 typedef long double ld;
@@ -38,15 +39,17 @@ Tree::Tree(ll f) : root(NULL), root_data(NULL) {
     }
 }
 
-long long Tree::hash(ll v,ll f, ll x, ll y)
+long long Tree::hash(ll x, ll y, ll resol)
 {
-    if(x==0 && y==0){
-        return v;
+    ll res = 0;
+    ll f = resol/FACTOR;
+    while(f>0){
+        res *= FACTOR*FACTOR;
+        res += (y%FACTOR + FACTOR * (x%FACTOR));
+        x /= FACTOR;
+        y /= FACTOR;
+        f /= FACTOR;
     }
-    ll m = pow(FACTOR*FACTOR,f+1);
-    ll res = hash(v+m,f-1,x/2,y/2);
-    res -= m;
-    res += m*(x % 2 + FACTOR * (y % 2));
     return res;
 }
 
@@ -82,8 +85,8 @@ ll Tree::binarySearch(Entry **arr,  ll len, Entry *elem)
     return res;
 }
 
-bool Tree::put(ll v, ll f, ll x, ll y, ld value){
-    Entry *elem = new Entry(hash(v, f, x, y), value);
+bool Tree::put(ll v, ll f, ll x, ll y, ll resol,ld value){
+    Entry *elem = new Entry(v+pow(FACTOR*FACTOR,f)*hash(x, y,resol), value);
     return insert(elem);
 }
 
@@ -161,8 +164,15 @@ pair<Node *, ll> Tree::find(Entry *elem)
     return make_pair((Node *)NULL, -1);
 }
 
-Entry* Tree::get(ll v, ll f, ll x, ll y){
-    Entry* temp = new Entry(hash(v,f,x,y),-1);
+Entry* Tree::get(ll v, ll f, ll x, ll y, ll resol){
+    Entry* temp = new Entry(v+pow(FACTOR*FACTOR,f)*hash(x,y,resol),-1);
+    // cout<<hash(x,y,resol);
+    // if((y+1)%resol==0){
+    //     cout<<"\n";
+    // }
+    // else{
+    //     cout<<"\t";
+    // }
     pair<Node *, ll> r = find(temp);
     if(r.first){
         return data(r.first,r.second);
@@ -356,18 +366,21 @@ void Tree::printNode(Node *r, string s)
     return;
 }
 
-void Tree::zoom_in(ll in){
-    for(ll i=0;i<=B;i++){
-        if(i!=in){
+void Tree::zoom_in(ll zn, ll f, ll resol, ll in){
+    if(!root){
+        return;
+    }
+    for(ll i=0;i<B;i++){
+        if(i!=in && child(root,i)){
             delete child(root,i);
             child(root,i)=NULL;
         }
-        if(i+1!=in && i!=B){
+        if(i+1!=in && i+1!=B && data(root,i)){
             delete data(root,i);
             data(root,i)=NULL;
         }
     }
-    if(in!=0){
+    if(in!=0 && root_data){
         delete root_data;
         root_data = data(root,in-1);
         data(root,in-1) = NULL;
@@ -376,16 +389,45 @@ void Tree::zoom_in(ll in){
     child(root,in) = NULL;
     delete root;
     root = temp;
+    ll a = pow(FACTOR*FACTOR,f);
+    ll b = pow(FACTOR*FACTOR,f-1)*resol*resol;
+    ll lim = a*pow((resol/FACTOR),2);
+    // cout<<zn<<" "<<f<<" "<<resol<<"\n";
+    // cout<<a<<" "<<b<<" "<<lim<<"\n";
+    for(ll i=0;i<lim;i+=a){
+        for(ll j=1;j<4;j++){
+            // cout<<i+j*b<<" ";
+            Entry* e = new Entry(root_data->h+i+j*b,-1);
+            insert(e);
+        }
+    }
+    // cout<<"\n";
 }
 
-// void Tree::zoom_out(ll v, ll on){
-//     Node* old_root = root;
-//     Entry* old_root_data = root_data;
-//     root = new Node(NULL,-1);
-//     ll f = pow(FACTOR*FACTOR,level(old_root_data->h));
-//     ll v = old_root_data->h % f;
-//     root_data = new Entry(v,-1);
-//     for(ll i=0;i<=b;i++){
-//         if()
-//     }
-// }
+void Tree::zoom_out(ll zn, ll f, ll resol, ll on){
+    Node* old_root = root;
+    root = NULL;
+    Entry* old_root_data = root_data;
+    root_data = NULL;
+
+    queue<Node*> q;
+    q.push(old_root);
+
+    ll a = pow(FACTOR*FACTOR,f);
+    root_data = new Entry(zn,-1);
+    root = new Node(NULL,-1);
+    if(on==0){
+        insert(old_root_data);
+        child(root,0) = old_root;
+    }
+    for(ll i=0;i<B;i++){
+        if(i+1!=on && i+1!=B){
+            Entry* temp = new Entry(zn+(i+1)*a,-1);
+            insert(temp);
+        }
+        else if(i+1==on){
+            insert(old_root_data);
+            child(root,i)=old_root;
+        }
+    }
+}

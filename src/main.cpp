@@ -6,7 +6,6 @@
 #include <thread>
 #include <semaphore>
 #include <Complex.hpp>
-#include <Stack.hpp>
 #include <Mandelbrot.hpp>
 #include <Utilities.hpp>
 using namespace std;
@@ -18,12 +17,12 @@ int main(int argc, char const *argv[])
 {
     Utilities *u = new Utilities;
     vector<std::thread *> threads(THREAD_COUNT);
-    Stack s;
     ofstream fout(argv[1]);
 
     sf::RenderWindow *window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mandelbrot Set");
     window->setKeyRepeatEnabled(false);
     sf::VertexArray **pixels[RESOL];
+    // cout << *(u->t) << flush <<"\n";
 
     u->start = chrono::high_resolution_clock::now();
     for (ll i = 0; i < THREAD_COUNT; i++)
@@ -35,7 +34,7 @@ int main(int argc, char const *argv[])
     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
     fout << (ld)u->duration.count() / 1000000 << flush << "\n";
-    cout<< "\r" << *(u->t) << flush <<"\n";
+    // cout << *(u->t) << flush <<"\n";
     while (window->isOpen())
     {
         sf::Event event;
@@ -62,33 +61,37 @@ int main(int argc, char const *argv[])
                     bool y_sec = event.mouseButton.y > WINDOW_HEIGHT / 2;
                     if (x_sec && y_sec)
                     {
-                        s.push(3);
-                        u->zoom_numb += 3*pow(FACTOR*FACTOR,s.height());
+                        u->zoom_numb += 3*pow(FACTOR*FACTOR,u->s.height());
+                        u->s.push(3);
+                        u->t->zoom_in(u->zoom_numb,u->s.height(),RESOL,3);
                         u->re_start = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_start = u->im_start + (u->im_end - u->im_start) / 2;
                     }
                     else if (x_sec)
                     {
-                        s.push(2);
-                        u->zoom_numb += 2*pow(FACTOR*FACTOR,s.height());
+                        u->zoom_numb += 2*pow(FACTOR*FACTOR,u->s.height());
+                        u->s.push(2);
+                        u->t->zoom_in(u->zoom_numb,u->s.height(),RESOL,2);
                         u->re_start = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_end = u->im_start + (u->im_end - u->im_start) / 2;
                     }
                     else if (y_sec)
                     {
-                        s.push(0);
+                        u->zoom_numb += pow(FACTOR*FACTOR,u->s.height());
+                        u->s.push(1);
+                        u->t->zoom_in(u->zoom_numb,u->s.height(),RESOL,1);
                         u->re_end = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_start = u->im_start + (u->im_end - u->im_start) / 2;
                     }
                     else
                     {
-                        s.push(1);
-                        u->zoom_numb += pow(FACTOR*FACTOR,s.height());
+                        u->s.push(0);
+                        u->t->zoom_in(u->zoom_numb,u->s.height(),RESOL,0);
                         u->re_end = u->re_start + (u->re_end - u->re_start) / 2;
                         u->im_end = u->im_start + (u->im_end - u->im_start) / 2;
                     }
-                    u->max_iter *= ITER_INC;
-
+                    // u->max_iter *= ITER_INC;
+                    // cout << *(u->t) << flush <<"\n";
                     u->start = chrono::high_resolution_clock::now();
                     u->barrier->release(THREAD_COUNT);
                     u->main_barrier->acquire();
@@ -96,22 +99,23 @@ int main(int argc, char const *argv[])
                     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
                     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
                     fout << (ld)u->duration.count() / 1000000 << flush << "\n";
+                    // cout << *(u->t) << flush <<"\n";
                 }
-                else if (event.mouseButton.button == sf::Mouse::Right && !s.empty())
+                else if (event.mouseButton.button == sf::Mouse::Right && !u->s.empty())
                 {
-                    switch (s.top())
+                    switch (u->s.top())
                     {
                     case 0:
                         u->re_end = u->re_start + (u->re_end - u->re_start) * 2;
-                        u->im_start = u->im_start - (u->im_end - u->im_start);
+                        u->im_end = u->im_start + (u->im_end - u->im_start) * 2;
                         break;
                     case 1:
-                        u->re_end = u->re_start + (u->re_end - u->re_start) * 2;
+                        u->re_start = u->re_start - (u->re_end - u->re_start);
                         u->im_end = u->im_start + (u->im_end - u->im_start) * 2;
                         break;
                     case 2:
-                        u->re_start = u->re_start - (u->re_end - u->re_start);
-                        u->im_end = u->im_start + (u->im_end - u->im_start) * 2;
+                        u->re_end = u->re_start + (u->re_end - u->re_start) * 2;
+                        u->im_start = u->im_start - (u->im_end - u->im_start);
                         break;
                     case 3:
                         u->re_start = u->re_start - (u->re_end - u->re_start);
@@ -120,8 +124,8 @@ int main(int argc, char const *argv[])
                     default:
                         break;
                     }
-                    u->zoom_numb %= (ll)pow(FACTOR*FACTOR,s.height());
-                    s.pop();
+                    u->zoom_numb %= (ll)pow(FACTOR*FACTOR,u->s.height());
+                    u->s.pop();
                     u->max_iter /= ITER_INC;
 
                     u->start = chrono::high_resolution_clock::now();
@@ -148,7 +152,7 @@ int main(int argc, char const *argv[])
         {
             Complex temp(u->re_start + (x_coord / WINDOW_WIDTH) * (u->re_end - u->re_start),
                          u->im_end - (y_coord / WINDOW_HEIGHT) * (u->im_end - u->im_start));
-            cout << "\r" << temp << "  " << flush;
+            // cout << "\r" << temp << "  " << flush;
         }
     }
 

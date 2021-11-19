@@ -5,17 +5,18 @@
 #include <chrono>
 #include <Mandelbrot.hpp>
 #include <Tree.hpp>
+#include <Stack.hpp>
 using namespace std;
 
 /* Window settings */
 #define WINDOW_WIDTH 1200.0
 #define WINDOW_HEIGHT 800.0
-#define RESOL 4
+#define RESOL 1024
 #define PIXEL_WIDHT WINDOW_WIDTH / RESOL
 #define PIXEL_HEIGHT WINDOW_HEIGHT / RESOL
 
 /* MultiThreading settings */
-#define THREAD_COUNT 1
+#define THREAD_COUNT 16
 #define THREAD_DIST RESOL / THREAD_COUNT
 
 class Utilities
@@ -34,6 +35,9 @@ public:
     long long zoom_numb;
     long long max_iter;
     bool running;
+
+    // Zooming stack
+    Stack s;
 
     // Memoisation Tree
     Tree* t;

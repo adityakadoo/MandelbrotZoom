@@ -65,13 +65,21 @@ void colour_pixel(Utilities *u, sf::VertexArray *p, ld m)
 
 void reset_pixel(Utilities *u, sf::VertexArray *pixel, ll x, ll y)
 {
-    Complex c(u->re_start + ((ld)x / RESOL) * (u->re_end - u->re_start),
-              u->im_start + ((ld)y / RESOL) * (u->im_end - u->im_start));
-    ld m = mandelbrot(c, u->max_iter);
-    colour_pixel(u, pixel, m);
-    cout<< "\r" << *(u->t) << flush <<"\n";
-    Entry* e = u->t->get(u->zoom_numb,x,y,m);
-    e->v = m;
+    Entry* e = u->t->get(u->zoom_numb,u->s.height(),x,y,RESOL);
+    if(e->v==-1){
+        // cout<<e->h;
+        Complex c(u->re_start + ((ld)x / RESOL) * (u->re_end - u->re_start),
+                  u->im_start + ((ld)y / RESOL) * (u->im_end - u->im_start));
+        e->v = mandelbrot(c, u->max_iter);
+    }
+    // cout<<(*e);
+    // if((y+1)%RESOL==0){
+    //     cout<<"\n";
+    // }
+    // else{
+    //     cout<<"\t";
+    // }
+    colour_pixel(u, pixel, e->v);
 }
 
 void init_pixel(Utilities *u, sf::VertexArray *pixel, ll x, ll y)

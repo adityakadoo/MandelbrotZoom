@@ -32,7 +32,7 @@ private:
     Entry *root_data;
 
     // Hashing function
-    static long long hash(long long, long long, long long, long long);
+    static long long hash(long long, long long, long long);
     // DEcoding function
     static std::pair<long long, long long> unhash(long long, long long);
     // Binary Search for internal use
@@ -48,13 +48,13 @@ public:
 
     /* Tree Operations */
     // Put an element with given x and y
-    bool put(long long, long long, long long, long long, long double);
+    bool put(long long, long long, long long, long long, long long, long double);
     // Inserts the given element
     bool insert(Entry*);
     // Find the given element
     std::pair<Node *, long long> find(Entry *);
     // Get element with given x and y
-    Entry* get(long long, long long, long long, long long);
+    Entry* get(long long, long long, long long, long long, long long);
     // Find min element in the tree
     Entry *min();
     // Find max element in the tree
@@ -70,16 +70,16 @@ public:
     // Print the tree in a pretty format
     friend std::ostream &operator<<(std::ostream &cout, Tree &t)
     {
-        cout << *t.root_data << "\n└──";
+        cout << "┬──" << *t.root_data << "\n└──";
         t.printNode(t.root, "   ");
         return cout;
     }
 
     /* Extra Functions for Zooming */
     // Zooming in
-    void zoom_in(long long);
+    void zoom_in(long long, long long, long long, long long);
     // Zooming out
-    void zoom_out(long long);
+    void zoom_out(long long, long long, long long, long long);
 };
 
 #endif
