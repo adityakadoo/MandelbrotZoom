@@ -22,7 +22,6 @@ int main(int argc, char const *argv[])
     sf::RenderWindow *window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Mandelbrot Set");
     window->setKeyRepeatEnabled(false);
     sf::VertexArray **pixels[RESOL];
-    // cout << *(u->t) << flush <<"\n";
 
     u->start = chrono::high_resolution_clock::now();
     for (ll i = 0; i < THREAD_COUNT; i++)
@@ -34,7 +33,7 @@ int main(int argc, char const *argv[])
     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
     fout << (ld)u->duration.count() / 1000000 << flush << "\n";
-    // cout << *(u->t) << flush <<"\n";
+
     while (window->isOpen())
     {
         sf::Event event;
@@ -92,7 +91,6 @@ int main(int argc, char const *argv[])
                     }
                     u->prev_max_iter = u->max_iter;
                     u->max_iter *= ITER_INC;
-                    // cout << *(u->t) << flush <<"\n";
                     u->start = chrono::high_resolution_clock::now();
                     u->barrier->release(THREAD_COUNT);
                     u->main_barrier->acquire();
@@ -100,7 +98,6 @@ int main(int argc, char const *argv[])
                     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
                     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
                     fout << (ld)u->duration.count() / 1000000 << flush << "\n";
-                    // cout << *(u->t) << flush <<"\n";
                 }
                 else if (event.mouseButton.button == sf::Mouse::Right && !u->s.empty())
                 {
@@ -134,7 +131,6 @@ int main(int argc, char const *argv[])
                     u->prev_max_iter = u->max_iter;
                     u->max_iter /= ITER_INC;
 
-                    // cout << *(u->t) << flush <<"\n";
                     u->start = chrono::high_resolution_clock::now();
                     u->barrier->release(THREAD_COUNT);
                     u->main_barrier->acquire();
@@ -142,7 +138,6 @@ int main(int argc, char const *argv[])
                     u->duration = chrono::duration_cast<chrono::microseconds>(u->stop - u->start);
                     cout << "\r" << (ld)u->duration.count() / 1000000 << " seconds taken\n";
                     fout << (ld)u->duration.count() / 1000000 << flush << "\n";
-                    // cout << *(u->t) << flush <<"\n";
                 }
             }
         }
@@ -160,7 +155,7 @@ int main(int argc, char const *argv[])
         {
             Complex temp(u->re_start + (x_coord / WINDOW_WIDTH) * (u->re_end - u->re_start),
                          u->im_end - (y_coord / WINDOW_HEIGHT) * (u->im_end - u->im_start));
-            // cout << "\r" << temp << "  " << flush;
+            cout << "\r" << temp << "  " << flush;
         }
     }
 

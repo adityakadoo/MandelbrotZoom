@@ -69,18 +69,10 @@ void reset_pixel(Utilities *u, sf::VertexArray *pixel, ll x, ll y)
     Entry *e = u->t->get(u->zoom_numb, u->s.height(), x, y, RESOL);
     if (e->v == -1 || (e->v == u->prev_max_iter && u->prev_max_iter != u->max_iter))
     {
-        // cout<<e->h;
         Complex c(u->re_start + ((ld)x / RESOL) * (u->re_end - u->re_start),
                   u->im_start + ((ld)y / RESOL) * (u->im_end - u->im_start));
         e->v = mandelbrot(c, u->max_iter);
     }
-    // cout<<(*e);
-    // if((y+1)%RESOL==0){
-    //     cout<<"\n";
-    // }
-    // else{
-    //     cout<<"\t";
-    // }
     colour_pixel(u, pixel, e->v);
 }
 

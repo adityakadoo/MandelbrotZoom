@@ -33,6 +33,11 @@ debug: $(DEBUG_OBJ)
 run:
 	./$(ODIR)/main.app test/log_file.txt
 
+.PHONY: plot
+
+plot:
+	python3 $(TESTDIR)/plot.py
+
 .PHONY: clean
 
 clean:
@@ -46,4 +51,4 @@ debug_clean:
 .PHONY: count
 
 count:
-	find . -name '*.[hc]pp' -o -name 'makefile' -o -name 'README.md' -o -name '.gitignore' | xargs wc -l
+	find . -name '*.[hc]pp' -o -name 'makefile' -o -name 'README.md' -o -name '*.py' | xargs wc -l

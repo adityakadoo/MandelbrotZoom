@@ -173,13 +173,6 @@ pair<Node *, ll> Tree::find(Entry *elem)
 Entry *Tree::get(ll v, ll f, ll x, ll y, ll resol)
 {
     Entry *temp = new Entry(v + pow(FACTOR * FACTOR, f) * hash(x, y, resol), -1);
-    // cout<<hash(x,y,resol);
-    // if((y+1)%resol==0){
-    //     cout<<"\n";
-    // }
-    // else{
-    //     cout<<"\t";
-    // }
     pair<Node *, ll> r = find(temp);
     if (r.first)
     {
@@ -407,18 +400,14 @@ void Tree::zoom_in(ll zn, ll f, ll resol, ll in)
     ll a = pow(FACTOR * FACTOR, f);
     ll b = pow(FACTOR * FACTOR, f - 1) * resol * resol;
     ll lim = a * pow((resol / FACTOR), 2);
-    // cout<<zn<<" "<<f<<" "<<resol<<"\n";
-    // cout<<a<<" "<<b<<" "<<lim<<"\n";
     for (ll i = 0; i < lim; i += a)
     {
         for (ll j = 1; j < 4; j++)
         {
-            // cout<<i+j*b<<" ";
             Entry *e = new Entry(root_data->h + i + j * b, -1);
             insert(e);
         }
     }
-    // cout<<"\n";
 }
 
 void Tree::zoom_out(ll zn, ll f, ll resol, ll on)
