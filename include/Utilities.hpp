@@ -34,13 +34,14 @@ public:
     long double im_end;
     long long zoom_numb;
     long long max_iter;
+    long long prev_max_iter;
     bool running;
 
     // Zooming stack
     Stack s;
 
     // Memoisation Tree
-    Tree* t;
+    Tree *t;
 
     /* Multithreading variables */
     // number of threads that reached the barrier

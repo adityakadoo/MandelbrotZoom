@@ -1,5 +1,5 @@
 #include <Tree.hpp>
-#include <bits/stdc++.h>
+#include <queue>
 using namespace std;
 typedef long long ll;
 typedef long double ld;
@@ -32,9 +32,11 @@ Node::~Node()
     delete[] data;
 }
 
-Tree::Tree(ll f) : root(NULL), root_data(NULL) {
-    for(ll i=0;i<f*f;i++){
-        Entry* e = new Entry(i,-1);
+Tree::Tree(ll f) : root(NULL), root_data(NULL)
+{
+    for (ll i = 0; i < f * f; i++)
+    {
+        Entry *e = new Entry(i, -1);
         insert(e);
     }
 }
@@ -42,10 +44,11 @@ Tree::Tree(ll f) : root(NULL), root_data(NULL) {
 long long Tree::hash(ll x, ll y, ll resol)
 {
     ll res = 0;
-    ll f = resol/FACTOR;
-    while(f>0){
-        res *= FACTOR*FACTOR;
-        res += (y%FACTOR + FACTOR * (x%FACTOR));
+    ll f = resol / FACTOR;
+    while (f > 0)
+    {
+        res *= FACTOR * FACTOR;
+        res += (y % FACTOR + FACTOR * (x % FACTOR));
         x /= FACTOR;
         y /= FACTOR;
         f /= FACTOR;
@@ -53,20 +56,22 @@ long long Tree::hash(ll x, ll y, ll resol)
     return res;
 }
 
-pair<ll, ll> Tree::unhash(ll h, ll f){
-    pair<ll,ll> res = make_pair(0,0);
-    for(ll i=0;i<f;i++){
-        ll temp = h % (FACTOR*FACTOR);
+pair<ll, ll> Tree::unhash(ll h, ll f)
+{
+    pair<ll, ll> res = make_pair(0, 0);
+    for (ll i = 0; i < f; i++)
+    {
+        ll temp = h % (FACTOR * FACTOR);
         res.first *= FACTOR;
         res.first += temp % FACTOR;
         res.second *= FACTOR;
         res.second += temp / FACTOR;
-        h /= FACTOR*FACTOR;
+        h /= FACTOR * FACTOR;
     }
     return res;
 }
 
-ll Tree::binarySearch(Entry **arr,  ll len, Entry *elem)
+ll Tree::binarySearch(Entry **arr, ll len, Entry *elem)
 {
     ll l = 0, r = len - 1, res = -1, mid;
     while (l <= r)
@@ -85,12 +90,13 @@ ll Tree::binarySearch(Entry **arr,  ll len, Entry *elem)
     return res;
 }
 
-bool Tree::put(ll v, ll f, ll x, ll y, ll resol,ld value){
-    Entry *elem = new Entry(v+pow(FACTOR*FACTOR,f)*hash(x, y,resol), value);
+bool Tree::put(ll v, ll f, ll x, ll y, ll resol, ld value)
+{
+    Entry *elem = new Entry(v + pow(FACTOR * FACTOR, f) * hash(x, y, resol), value);
     return insert(elem);
 }
 
-bool Tree::insert(Entry* elem)
+bool Tree::insert(Entry *elem)
 {
     if (!root_data)
     {
@@ -103,11 +109,11 @@ bool Tree::insert(Entry* elem)
     while (r)
     {
         p = r;
-        i = binarySearch(&data(r, 0), size(r), elem);
-        if (i == size(r) - 1 && size(r) + 1 < B)
+        i = binarySearch(&data(r, 0), nodesize(r), elem);
+        if (i == nodesize(r) - 1 && nodesize(r) + 1 < B)
         {
-            data(r, size(r)) = elem;
-            size(r)++;
+            data(r, nodesize(r)) = elem;
+            nodesize(r)++;
             return true;
         }
         else if (i == -1)
@@ -125,7 +131,7 @@ bool Tree::insert(Entry* elem)
     }
     r = new Node(p, i + 1);
     data(r, 0) = elem;
-    size(r)++;
+    nodesize(r)++;
     if (!p)
     {
         root = r;
@@ -147,7 +153,7 @@ pair<Node *, ll> Tree::find(Entry *elem)
     ll i;
     while (r)
     {
-        i = binarySearch(&data(r, 0), size(r), elem);
+        i = binarySearch(&data(r, 0), nodesize(r), elem);
         if (i == -1)
         {
             r = child(r, 0);
@@ -164,8 +170,9 @@ pair<Node *, ll> Tree::find(Entry *elem)
     return make_pair((Node *)NULL, -1);
 }
 
-Entry* Tree::get(ll v, ll f, ll x, ll y, ll resol){
-    Entry* temp = new Entry(v+pow(FACTOR*FACTOR,f)*hash(x,y,resol),-1);
+Entry *Tree::get(ll v, ll f, ll x, ll y, ll resol)
+{
+    Entry *temp = new Entry(v + pow(FACTOR * FACTOR, f) * hash(x, y, resol), -1);
     // cout<<hash(x,y,resol);
     // if((y+1)%resol==0){
     //     cout<<"\n";
@@ -174,10 +181,12 @@ Entry* Tree::get(ll v, ll f, ll x, ll y, ll resol){
     //     cout<<"\t";
     // }
     pair<Node *, ll> r = find(temp);
-    if(r.first){
-        return data(r.first,r.second);
+    if (r.first)
+    {
+        return data(r.first, r.second);
     }
-    else if(r.second==0){
+    else if (r.second == 0)
+    {
         return root_data;
     }
     return NULL;
@@ -199,11 +208,11 @@ Entry *Tree::max()
         return root_data;
     }
     Node *r = root;
-    while (child(r, size(r)))
+    while (child(r, nodesize(r)))
     {
-        r = child(r, size(r));
+        r = child(r, nodesize(r));
     }
-    return data(r, size(r) - 1);
+    return data(r, nodesize(r) - 1);
 }
 
 Entry *Tree::succ(Entry *elem)
@@ -226,14 +235,14 @@ Entry *Tree::succ(Entry *elem)
         }
         return NULL;
     }
-    if (!child(r.first, r.second + 1) && r.second + 1 < size(r.first))
+    if (!child(r.first, r.second + 1) && r.second + 1 < nodesize(r.first))
     {
         return data(r.first, r.second + 1);
     }
     else if (!child(r.first, r.second + 1))
     {
         pair<Node *, ll> p = parent(r.first);
-        while (p.first && p.second >= size(p.first))
+        while (p.first && p.second >= nodesize(p.first))
         {
             p = parent(p.first);
         }
@@ -274,7 +283,7 @@ Entry *Tree::pred(Entry *elem)
         }
         if (p.first)
         {
-            return data(p.first, size(p.first) - 1);
+            return data(p.first, nodesize(p.first) - 1);
         }
         else
         {
@@ -284,7 +293,7 @@ Entry *Tree::pred(Entry *elem)
     while (child(r.first, r.second))
     {
         ll temp = r.second;
-        r.second = size(child(r.first, r.second));
+        r.second = nodesize(child(r.first, r.second));
         r.first = child(r.first, temp);
     }
     return data(r.first, r.second - 1);
@@ -297,14 +306,14 @@ void Tree::traverse(function<void(Entry *)> f, Node *r)
         r = root;
         f(root_data);
     }
-    for (ll i = 0; i < size(r); i++)
+    for (ll i = 0; i < nodesize(r); i++)
     {
         if (child(r, i))
             traverse(f, child(r, i));
         f(data(r, i));
     }
-    if (child(r, size(r)))
-        traverse(f, child(r, size(r)));
+    if (child(r, nodesize(r)))
+        traverse(f, child(r, nodesize(r)));
     return;
 }
 
@@ -322,7 +331,7 @@ Tree::~Tree()
 
 void Tree::printNode(Node *r, string s)
 {
-    for (ll i = 0; i < size(r); i++)
+    for (ll i = 0; i < nodesize(r); i++)
     {
         if (child(r, i))
         {
@@ -337,14 +346,14 @@ void Tree::printNode(Node *r, string s)
                 printNode(child(r, i), s + "│  ");
             }
         }
-        if (i == 0 && !child(r, i) && size(r) != 1)
+        if (i == 0 && !child(r, i) && nodesize(r) != 1)
             cout << "┬──" << *data(r, i) << "\n";
-        else if (i != size(r) - 1)
+        else if (i != nodesize(r) - 1)
             cout << s << "├──" << *data(r, i) << "\n";
     }
-    if (size(r) == 1 && !child(r, 0))
+    if (nodesize(r) == 1 && !child(r, 0))
     {
-        if (child(r, size(r)))
+        if (child(r, nodesize(r)))
             cout << "┬──";
         else
             cout << "───";
@@ -352,82 +361,125 @@ void Tree::printNode(Node *r, string s)
     else
     {
         cout << s;
-        if (child(r, size(r)))
+        if (child(r, nodesize(r)))
             cout << "├──";
         else
             cout << "└──";
     }
-    cout << *data(r, size(r) - 1) << "\n";
-    if (child(r, size(r)))
+    cout << *data(r, nodesize(r) - 1) << "\n";
+    if (child(r, nodesize(r)))
     {
         cout << s << "└──";
-        printNode(child(r, size(r)), s + "   ");
+        printNode(child(r, nodesize(r)), s + "   ");
     }
     return;
 }
 
-void Tree::zoom_in(ll zn, ll f, ll resol, ll in){
-    if(!root){
+void Tree::zoom_in(ll zn, ll f, ll resol, ll in)
+{
+    if (!root)
+    {
         return;
     }
-    for(ll i=0;i<B;i++){
-        if(i!=in && child(root,i)){
-            delete child(root,i);
-            child(root,i)=NULL;
+    for (ll i = 0; i < B; i++)
+    {
+        if (i != in && child(root, i))
+        {
+            delete child(root, i);
+            child(root, i) = NULL;
         }
-        if(i+1!=in && i+1!=B && data(root,i)){
-            delete data(root,i);
-            data(root,i)=NULL;
+        if (i + 1 != in && i + 1 != B && data(root, i))
+        {
+            delete data(root, i);
+            data(root, i) = NULL;
         }
     }
-    if(in!=0 && root_data){
+    if (in != 0 && root_data)
+    {
         delete root_data;
-        root_data = data(root,in-1);
-        data(root,in-1) = NULL;
+        root_data = data(root, in - 1);
+        data(root, in - 1) = NULL;
     }
-    Node* temp = child(root,in);
-    child(root,in) = NULL;
+    Node *temp = child(root, in);
+    child(root, in) = NULL;
     delete root;
     root = temp;
-    ll a = pow(FACTOR*FACTOR,f);
-    ll b = pow(FACTOR*FACTOR,f-1)*resol*resol;
-    ll lim = a*pow((resol/FACTOR),2);
+    ll a = pow(FACTOR * FACTOR, f);
+    ll b = pow(FACTOR * FACTOR, f - 1) * resol * resol;
+    ll lim = a * pow((resol / FACTOR), 2);
     // cout<<zn<<" "<<f<<" "<<resol<<"\n";
     // cout<<a<<" "<<b<<" "<<lim<<"\n";
-    for(ll i=0;i<lim;i+=a){
-        for(ll j=1;j<4;j++){
+    for (ll i = 0; i < lim; i += a)
+    {
+        for (ll j = 1; j < 4; j++)
+        {
             // cout<<i+j*b<<" ";
-            Entry* e = new Entry(root_data->h+i+j*b,-1);
+            Entry *e = new Entry(root_data->h + i + j * b, -1);
             insert(e);
         }
     }
     // cout<<"\n";
 }
 
-void Tree::zoom_out(ll zn, ll f, ll resol, ll on){
-    Node* old_root = root;
+void Tree::zoom_out(ll zn, ll f, ll resol, ll on)
+{
+    Node *old_root = root;
     root = NULL;
-    Entry* old_root_data = root_data;
+    Entry *old_root_data = root_data;
     root_data = NULL;
 
-    queue<Node*> q;
+    queue<Node *> q;
     q.push(old_root);
-
-    ll a = pow(FACTOR*FACTOR,f);
-    root_data = new Entry(zn,-1);
-    root = new Node(NULL,-1);
-    if(on==0){
-        insert(old_root_data);
-        child(root,0) = old_root;
+    while (!q.empty())
+    {
+        Node *s = q.front();
+        for (ll i = 0; i < B; i++)
+        {
+            if (child(child(s, i), 0))
+            {
+                q.push(child(s, i));
+            }
+            else
+            {
+                delete child(s, i);
+                child(s, i) = NULL;
+            }
+        }
+        q.pop();
     }
-    for(ll i=0;i<B;i++){
-        if(i+1!=on && i+1!=B){
-            Entry* temp = new Entry(zn+(i+1)*a,-1);
+
+    ll a = pow(FACTOR * FACTOR, f);
+    ll b = pow(FACTOR * FACTOR, f) * resol * resol;
+    root = new Node(NULL, -1);
+    if (on == 0)
+    {
+        insert(old_root_data);
+        child(root, 0) = old_root;
+        root_data = old_root_data;
+    }
+    else
+    {
+        root_data = new Entry(zn, -1);
+    }
+    for (ll i = 0; i < B; i++)
+    {
+        if (i + 1 != on && i + 1 != B)
+        {
+            Entry *temp = new Entry(zn + (i + 1) * a, -1);
             insert(temp);
         }
-        else if(i+1==on){
+        else if (i + 1 == on)
+        {
             insert(old_root_data);
-            child(root,i)=old_root;
+            child(root, i + 1) = old_root;
+        }
+    }
+    for (ll i = zn + FACTOR * FACTOR * a; i < b; i += a)
+    {
+        if (old_root_data->h > i || old_root_data->h + a <= i)
+        {
+            Entry *temp = new Entry(i, -1);
+            insert(temp);
         }
     }
 }

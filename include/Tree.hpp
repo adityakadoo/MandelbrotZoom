@@ -23,7 +23,7 @@ public:
 #define parent(n) n->parent
 #define child(n, i) n->children[i]
 #define data(n, i) n->data[i]
-#define size(n) n->size
+#define nodesize(n) n->size
 
 class Tree
 {
@@ -50,11 +50,11 @@ public:
     // Put an element with given x and y
     bool put(long long, long long, long long, long long, long long, long double);
     // Inserts the given element
-    bool insert(Entry*);
+    bool insert(Entry *);
     // Find the given element
     std::pair<Node *, long long> find(Entry *);
     // Get element with given x and y
-    Entry* get(long long, long long, long long, long long, long long);
+    Entry *get(long long, long long, long long, long long, long long);
     // Find min element in the tree
     Entry *min();
     // Find max element in the tree

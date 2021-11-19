@@ -12,6 +12,7 @@ Utilities::Utilities()
     im_start = IM_START;
     im_end = IM_END;
     max_iter = MAX_ITER;
+    prev_max_iter = 0;
     zoom_numb = 0;
     running = true;
     t = new Tree(RESOL);
@@ -65,8 +66,9 @@ void colour_pixel(Utilities *u, sf::VertexArray *p, ld m)
 
 void reset_pixel(Utilities *u, sf::VertexArray *pixel, ll x, ll y)
 {
-    Entry* e = u->t->get(u->zoom_numb,u->s.height(),x,y,RESOL);
-    if(e->v==-1){
+    Entry *e = u->t->get(u->zoom_numb, u->s.height(), x, y, RESOL);
+    if (e->v == -1 || (e->v == u->prev_max_iter && u->prev_max_iter != u->max_iter))
+    {
         // cout<<e->h;
         Complex c(u->re_start + ((ld)x / RESOL) * (u->re_end - u->re_start),
                   u->im_start + ((ld)y / RESOL) * (u->im_end - u->im_start));
