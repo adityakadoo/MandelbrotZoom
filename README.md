@@ -8,7 +8,57 @@
 
 ## Description
 
-Currently the app can create a window initialized to show the complete Mandelbrot Set on the complex plain. The user can click on one of the quadrants to zoom into it. Thus every time the user can zoom in 2x times. This can be done upto 20x times before the image get very blurry.
+The app can create a window initialized to show the complete Mandelbrot Set on the complex plain using **SFML graphics library**. The user can right-click on one of the quadrants to zoom into it and left-click anywhere to zoom out. Thus wiht every click, the user can zoom 2x times.
+
+Zooming in can be done upto 20-30 times and the image quality won't get poor but this comes at the expense of more and more computation time. Hence to reduce the time complexity while zooming, memoisation and multithreading is implemented. These algorithms are explained below in detail.
+
+----
+
+## Makefile Commands
+
+- `make compile` - Compiles the all necessary files and generate a obj/main.app executable file
+- `make run` - Executes main.app with times being logged into a [log file](test/log_file.txt)
+- `make debug` - Starts a debug session in GDB with main program loaded
+- `make clean` - Cleans the object directory
+- `make plot` - Runs python program and generates the [comparision plot](images/comparison.png)
+- `make count` - Counts total number of lines of code
+
+----
+
+## Algorithms and there comparison
+
+1. **Naive method**
+
+    The most basic way to generate the plot of mandelbrot set uses the escape-time algorithm to give every point in the complex plane a value between 0 to MAX_ITER (constant like 500). This value is then used to colour the corresponding pixel on the plot. Thus for every pixel on the window the algorithm runs no more than MAX_ITER iterations. This means the complexity is **O(MAX_ITER\*N)** where N is the number of pixels on the window.
+
+    Although this algorithm is not very slow, as we will be zooming into the Mandelbrot set this algorithm doesn't take that into account and repeats the computations for many pixels which can be optimised.
+
+2. **Memoisation**
+
+    As discussed above, we must find a way to avoid repeating calculations for pixels that are going to reappear on the window after zooming. This can be done by memoising the values returned by the escape-time algorithm and reusing these values after zooming. Here, a simple B-tree comes to rescue!
+
+    | X, Y-> | 0   | 1   | 2   | 3   |
+    | ----   | --- | --- | --- | --- |
+    | 0 ->   | 0   | 4   | 1   | 5   |
+    | 1 ->   | 8   | 12  | 9   | 13  |
+    | 2 ->   | 2   | 6   | 3   | 7   |
+    | 3 ->   | 10  | 14  | 11  | 15  |
+
+    ![tree-rep](images/tree-rep.jpg)
+
+    The table given above shows how the values on the window are hashed to keys from 0 to N-1 where N is number of pixels. Using theses keys we store the results for each pixel as entries in a tree as shown in the figure.
+
+    This way zooming into any one of the quadrants means we can reuse that corresponding branch of the tree and delete the rest. This way we only need to perform the escape-time algorithm on exactly 3\*N/4 values. The resulting time complexity is **O(MAX_ITER\*(3N/4))** which is a significant improvement.
+
+3. **Multi-threading**
+
+    Performing the escape-time algorithm for each pixel is an independent task and hence can be done simultaneously by multiple threads. This way, the time complexity is reduced by a factor equal to the number of threads that can be run at a time on any given machine. This decreases the computation time by a lot.
+
+Below, the bar graph shows comparison between computation times for different algorithms while zooming into a completely black region of the Mandelbrot Set and then zooming out back to the start.
+
+![comparison-plot](images/comparison.png)
+
+For the first case, the memoisation is marginaly slower as it has almost equal computation. But it is clear that in later cases that memoisation takes almost 3/4th amount of time. Multi-threading simply boosts the execution time in both cases.
 
 ----
 
@@ -16,23 +66,17 @@ Currently the app can create a window initialized to show the complete Mandelbro
 
 - **Complex** - A class for implementing complex numbers on the complex plane. Data type for real and imaginary components is taken as template argument for flexibility. Supports operators such as +, -, *, /, !, ==, !=, [] and fucntions such as abs().
 
-- **SFML** - External library used for rendering graphics and taking user input. It creates the window and takes mouse-clicks for zooming in.
+- **SFML** - External library used for rendering graphics and taking user input. It creates the window and takes mouse-clicks for zooming in and out.
 
-### To be improved
+- **Main** - Only a source file which has the actual main function that brings together all the headers to run the application. It creates all the threads and executes the runtime while-loop.
 
-- **Main** - Only a source file which has the actual main function that brings together all the headers to run the application. Currently only has zomming and is very slow. Plans to improve speed by adding multi-theading.
+- **Mandelbrot** - Implements a function for the mandelbrot set's [Optimised Escape-Time algorithm](https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set#:~:text=number%20of%20iterations.-,Optimized%20escape%20time%20algorithms,-%5Bedit%5D). It can be extended to include various other fractals!
 
-- **Mandelbrot** - Implements the functions related to the mandelbrot set. Currently contains 2 functions: mandelbrot() which executes the [Optimised Escape-Time algorithm](https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set#:~:text=number%20of%20iterations.-,Optimized%20escape%20time%20algorithms,-%5Bedit%5D) and colour_pixel() method to give colour to a certain pixel according to it's result from the mandelbrot() function.
+- **Entry** - Has a class to create entries that go into the tree. These entries have a hashed key and a corresponding value. These can be compared using <=, <, ==, >, <= and != operators to order the entries based on the keys while accessing the tree.
 
-### To be added
+- **Tree** - This has a class for Nodes and a class for Trees that uses the nodes. The nodes have 3 entries and 4 children each. The tree class stores a root pointing towards the root-node and a root_data pointing to the least entry. Although B-tree as always balanced, this version is not but the way it is used in the program guarantees **O(logN)** insertion and access time.
 
-- A Map class to memoize the results from the Mandelbrot algorithm to imporve time complexity of the code using Data Stuctures
-
-- A B-Tree class for internal storage of the Map. This will give faster implementation.
-
-- A class for dynamic floats to improve precision
-
-- Tests to see if complexity is actually improving
+- **Utilities** - A header to encapsulate all the functions and data relevant while the programs runtime. This was made just to keep the main program clean and small.
 
 ----
 

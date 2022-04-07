@@ -1,7 +1,10 @@
 #ifndef __COMPLEX__
 #define __COMPLEX__
 #include <iostream>
+#include <iomanip>
 #include <math.h>
+
+#define MAX_ERR 1e-6
 
 class Complex
 {
@@ -10,6 +13,7 @@ private:
     // the real and imag components
     long double real;
     long double imag;
+
 public:
     /* Constructors and Destructors */
     // Default constructor; returns origin
@@ -18,11 +22,11 @@ public:
     Complex(long double, long double);
     // Default destructor
     ~Complex();
-    
+
     /* Component Access */
     // Read/write refererence for real or imag components
     // [0] - real; [1] - imag
-    long double& operator[](int);
+    long double &operator[](int);
 
     /* Arithmetic Operations */
     // Addition
@@ -39,7 +43,7 @@ public:
     Complex operator-();
     // Compliment
     Complex operator!();
-    
+
     /* Boolean Operations */
     // Equality
     bool operator==(Complex);
@@ -48,8 +52,16 @@ public:
 
     /* Printing */
     // Prints the given complex number
-    friend std::ostream& operator<<(std::ostream &cout, Complex &c){
-        cout<<c.real<<"+"<<c.imag<<"j";
+    friend std::ostream &operator<<(std::ostream &cout, Complex &c)
+    {
+        if (c.imag >= 0)
+        {
+            cout << std::fixed << std::setprecision(4) << c.real << "+" << c.imag << "j";
+        }
+        else
+        {
+            cout << std::fixed << std::setprecision(4) << c.real << c.imag << "j";
+        }
         return cout;
     }
 };

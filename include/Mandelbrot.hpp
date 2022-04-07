@@ -6,11 +6,16 @@
 #include <iostream>
 #include <Complex.hpp>
 
-#define MAX_ITER 500
+// Mandelbrot settings
+#define RE_START -2.0
+#define RE_END 1.0
+#define IM_START -1.0
+#define IM_END 1.0
+#define MAX_ITER 100
+#define ITER_INC 1.2
 
 // Implements the mandelbrot escape-time algorithm
-long double mandelbrot(Complex);
-// Gives color to a given pixel
-void colour_pixel(sf::VertexArray*,long double);
+// Returns the 0-1 ratio of result to Max_iter
+long double mandelbrot(Complex, long long);
 
 #endif
